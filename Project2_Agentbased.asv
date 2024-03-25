@@ -7,8 +7,7 @@
 
 
 numIndivs = 50;  % number of people
-numTrials = 100; % number of steps they take
-riskDist = 1;    % each indiv will infect people who are riskDist away from them
+numTrials = 100;
 
 iPosX = [numIndivs];
 iPosY = [numIndivs];
@@ -38,7 +37,7 @@ end
 
 %Move the individuals
 stepsize = .2;
-handle = plot(iPosX(ind),iPosY(ind), 'g.', 'MarkerSize', 25);
+handle = plot(iPosX(ind),iPosY(ind), 'g.', 'MarkerSize', 25)
 hold on;
 for trials =1: numTrials
     for ind=1:numIndivs
@@ -54,21 +53,21 @@ for trials =1: numTrials
         mvy = stepsize * (rand()-.5);
         iPosX(ind) = iPosX(ind) + mvx;
         iPosY(ind) = iPosY(ind) + mvy;
-        if iPosX(ind)>xbound
-           disp("trial " + trials + " moved " + iPosX(ind) +  " to " + xbound)
-           iPosX(ind) = xbound;
+        while iPosX(ind)>xbound
+           % disp("moved " + iPosX(ind) +  " to " + (iPosX(ind) + rand()-.5))
+           iPosX(ind) = iPosX(ind) + rand()-.5;
         end
-        if iPosX(ind)<-xbound
-           disp("trial " + trials + " moved " + iPosX(ind) +  " to " + -xbound)
-           iPosX(ind) = -xbound;
+        while iPosX(ind)<-xbound
+           % disp("moved " + iPosX(ind) +  " to " + (iPosX(ind) + rand()-.5))
+           iPosX(ind) = iPosX(ind) + rand()-.5;
         end
-        if iPosY(ind)>ybound
-           disp("trial " + trials + " moved " + iPosY(ind) +  " to " + ybound)
-           iPosY(ind) = ybound;
+        while iPosY(ind)>ybound
+           % disp("moved " + iPosY(ind) +  " to " + (iPosY(ind) + rand()-.5))
+           iPosY(ind) = iPosY(ind) + rand()-.5;
         end
-        if iPosY(ind)<-ybound
-           disp("trial " + trials + " moved "+ iPosY(ind) +  " to " + ybound)
-           iPosY(ind) = -ybound;
+        while iPosY(ind)<-ybound
+           % disp("moved " + iPosY(ind) +  " to " + (iPosY(ind) + rand()-.5))
+           iPosY(ind) = iPosY(ind) + rand()-.5;
         end
         handle.XData = iPosX(1:numIndivs);
         handle.YData = iPosY(1:numIndivs);
