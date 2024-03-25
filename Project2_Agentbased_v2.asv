@@ -12,7 +12,7 @@ riskDist  = 1;    % each indiv will infect people who are riskDist away from the
 numIll    = 5; % number of sick people to introduce
 
 p1 = indiv; % one person
-p1.pos = [10*rand(),10*rand];
+p1.pos = [.5 + 10*rand(),10*rand];
 person.grp = 'S';
 indivs = createArray(1,numIndivs,FillValue=p1);
 
@@ -25,13 +25,13 @@ xlabel('x');
 ylabel('y');
 xbound = 10;
 ybound = 10;
-axis([-.25 xbound+.25 -.25 ybound+.25]);
+axis([0 xbound+1 0 ybound+1]);
 % grid on;
 
 %%Compute Initial Positions
 for ind=1:numIndivs
     person = indiv; 
-    person.pos = [10*rand(),10*rand];
+    person.pos = [10*rand().5 +,10*rand];
     person.grp = 'S';
     indivs(ind) = person;
 end 
@@ -78,7 +78,7 @@ end
 for trials =1: numTrials
     title(['Trial: ', num2str(trials)]);
     pause(.3)
-    for ind=1:sind-1 % move susceptible people
+    for ind=1:sind-1 %move susceptible people
         agent = susceptible(ind);
         mvx = stepsize * (rand()-.5);  %amount for x to move
         mvy = stepsize * (rand()-.5);  %amount for y to move
@@ -106,29 +106,33 @@ for trials =1: numTrials
         sh.XData = sXpos(1:sind);
         sh.YData = sYpos(1:sind);
     end
-    for ind=1:iind-1 % move infected people
+    for ind=1:iind-1 %move infected people
         agent = infected(ind);
         mvx = stepsize * (rand()-.5);  %amount for x to move
         mvy = stepsize * (rand()-.5);  %amount for y to move
         agent.pos(1) = agent.pos(1) + mvx; %updating positions
         agent.pos(2) = agent.pos(2) + mvy;
         if agent.pos(1)>xbound
+           % disp("trial " + trials + " moved " + iPosX(ind) +  " to " + xbound)
            agent.pos(1) = xbound;
         end
         if agent.pos(1)<-xbound
+           % disp("trial " + trials + " moved " + iPosX(ind) +  " to " + -xbound)
            agent.pos(1) = -xbound;
         end
         if agent.pos(2)>ybound
+           % disp("trial " + trials + " moved " + iPosY(ind) +  " to " + ybound)
            agent.pos(2) = ybound;
         end
         if agent.pos(2)<-ybound
+           % disp("trial " + trials + " moved "+ iPosY(ind) +  " to " + ybound)
            agent.pos(2) = -ybound;
         end
         iXpos(ind) = agent.pos(1);
         iYpos(ind) = agent.pos(2);
+        % plot(agent.pos(1), agent.pos(2), 'g.');
         ih.XData = iXpos(1:iind);
         ih.YData = iYpos(1:iind);
     end
     drawnow;
-    % check distances and infect people ..?
 end 
