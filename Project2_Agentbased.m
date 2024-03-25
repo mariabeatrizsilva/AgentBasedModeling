@@ -6,9 +6,11 @@
 % We iterate this process as our agents move around --> simulation.
 
 
-numIndivs = 50;  % number of people
-numTrials = 100; % number of steps they take
-riskDist = 1;    % each indiv will infect people who are riskDist away from them
+numIndivs = 5;  % number of people
+numTrials = 10; % number of steps they take
+riskDist  = 1;    % each indiv will infect people who are riskDist away from them
+startIllness = 1; %number of trial for when to introduce sick people
+numIll = 1; %number of sick people to introduce
 
 iPosX = [numIndivs];
 iPosY = [numIndivs];
@@ -23,7 +25,7 @@ xlabel('x');
 ylabel('y');
 xbound = 10;
 ybound = 10;
-axis([0 xbound 0 ybound]);
+axis([0 xbound+1 0 ybound+1]);
 % grid on;
 
 %%Compute Initial Positions
@@ -38,40 +40,49 @@ end
 
 %Move the individuals
 stepsize = .2;
-handle = plot(iPosX(ind),iPosY(ind), 'g.', 'MarkerSize', 25);
+hh = plot(iPosX(ind),iPosY(ind), '.', 'MarkerSize', 25, 'Color', 'g');
+ih = plot(iPosX(ind),iPosY(ind), '.', 'MarkerSize', 25, 'Color', 'r');
 hold on;
 for trials =1: numTrials
-    for ind=1:numIndivs
-        mark = 'g.'; %defaults to green for susceptible
-        if iGrp(ind) == 'I'
-            mark = 'r.';
-        elseif iGrp(ind) == 'R'
-            mark = 'b.';
-        elseif iGrp(ind) == 'D'
-            mark = 'k.';
+    title(['Trial: ', num2str(trials)]);
+    if trials == startIllness
+        for n=1:numIll
+            iGrp(ind) = 'I';
+            disp("Made person ill");
         end
-        mvx = stepsize * (rand()-.5);
-        mvy = stepsize * (rand()-.5);
-        iPosX(ind) = iPosX(ind) + mvx;
+    end
+    for ind=1:numIndivs
+        if iGrp(ind) == 'I'
+            ih.XData = iPosX(ind);
+            ih.YData = iPosY(ind);
+        % elseif iGrp(ind) == 'R' %recovered
+        %     hh.Color = 'b';
+        % elseif iGrp(ind) == 'D' %dead 
+        %     hh.Color = 'k';
+        else                    %still susceptible
+            hh.XData = iPosX(ind);
+            hh.YData = iPosY(ind);
+        end
+        mvx = stepsize * (rand()-.5);  %amount for x to move
+        mvy = stepsize * (rand()-.5);  %amount for y to move
+        iPosX(ind) = iPosX(ind) + mvx; %updating positions
         iPosY(ind) = iPosY(ind) + mvy;
         if iPosX(ind)>xbound
-           disp("trial " + trials + " moved " + iPosX(ind) +  " to " + xbound)
+           % disp("trial " + trials + " moved " + iPosX(ind) +  " to " + xbound)
            iPosX(ind) = xbound;
         end
         if iPosX(ind)<-xbound
-           disp("trial " + trials + " moved " + iPosX(ind) +  " to " + -xbound)
+           % disp("trial " + trials + " moved " + iPosX(ind) +  " to " + -xbound)
            iPosX(ind) = -xbound;
         end
         if iPosY(ind)>ybound
-           disp("trial " + trials + " moved " + iPosY(ind) +  " to " + ybound)
+           % disp("trial " + trials + " moved " + iPosY(ind) +  " to " + ybound)
            iPosY(ind) = ybound;
         end
         if iPosY(ind)<-ybound
-           disp("trial " + trials + " moved "+ iPosY(ind) +  " to " + ybound)
+           % disp("trial " + trials + " moved "+ iPosY(ind) +  " to " + ybound)
            iPosY(ind) = -ybound;
         end
-        handle.XData = iPosX(1:numIndivs);
-        handle.YData = iPosY(1:numIndivs);
         drawnow;
     end 
 end 
