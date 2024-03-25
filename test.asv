@@ -9,12 +9,12 @@
 numIndivs = 5;  % number of people
 numTrials = 10; % number of steps they take
 riskDist  = 1;    % each indiv will infect people who are riskDist away from them
-startIllness = 1; %number of trial for when to introduce sick people
-numIll = 1; %number of sick people to introduce
+numIll    = 2; % number of sick people to introduce
 
-iPosX = [numIndivs];
-iPosY = [numIndivs];
-iGrp  = [numIndivs];
+p1 = indiv; % one person
+p1.pos = [10*rand(),10*rand];
+person.grp = 'S';
+indivs = createArray(1,numIndivs,FillValue=p1);
 
 % Create figure for plotting
 figure;
@@ -33,53 +33,78 @@ for ind=1:numIndivs
     person = indiv; 
     person.pos = [10*rand(),10*rand];
     person.grp = 'S';
-    iPosX(ind) = person.pos(1);
-    iPosY(ind) = person.pos(2);
-    iGrp(ind) = person.grp;
+    indivs(ind) = person;
 end 
-
+    ih = plot(person.pos(1), person.pos(2), '.', 'MarkerSize', 25, 'Color', 'r');
+    sh = plot(person.pos(1), person.pos(2), '.', 'MarkerSize', 25, 'Color', 'g');
 %Move the individuals
-stepsize = .2;
-hh = plot(iPosX(ind),iPosY(ind), '.', 'MarkerSize', 25, 'Color', 'g');
-ih = plot(iPosX(ind),iPosY(ind), '.', 'MarkerSize', 25, 'Color', 'r');
+stepsize = .2; 
 hold on;
-for trials =1: numTrials
-    title(['Trial: ', num2str(trials)]);
-    illindices = zeros(numIndivs);
-    if trials == startIllness
-        for n=1:numIll
-            illindices(n) = ind;
-            iGrp(ind) = 'I';
+    
+%make an array of infected people and susceptible
+susceptible = createArray(1,numIndivs,FillValue=p1);
+infected = createArray(1,numIndivs,FillValue=p1); 
+sind = 1;
+iind = 1;
+%array for positions of each group people (max size is num ppl)
+sXpos = zeros(numIndivs);
+sYpos = zeros(numIndivs);
+iXpos = zeros(numIndivs);
+iYpos = zeros(numIndivs);
+for i=1:numIndivs
+    sXpos(i) = -1;
+    sYpos(i) = -1;
+    iXpos(i) = -1;
+    iYpos(i) = -1;
+end
+%separate people into healthy and unhealthy
+    for i = 1: numIndivs
+        if numIll ~= 0          %make numIll number of people sick 
+            indivs(i).grp = 'I'; 
+            infected(iind) = indivs(i);
+            iXpos(iind) = indivs(i).pos(1);
+            iYpos(iind) = indivs(i).pos(2);
+            iind = iind+1;
+            numIll = numIll-1;
+        end
+        if indivs(i).grp == 'S'
+            susceptible(sind) = indivs(i);
+            sXpos(sind) = indivs(i).pos(1);
+            sYpos(sind) = indivs(i).pos(2);
+            sind = sind+1;
         end
     end
-    for ind=1:numIndivs
-        if iGrp(ind) == 'I'
-            ih.XData = iPosX(1);
-            ih.YData = iPosY(1:illindices);
-        else %still susceptible
-            hh.XData = iPosX(1:numIndivs);
-            hh.YData = iPosY(1:numIndivs);
-        end
+
+for trials =1: numTrials
+    title(['Trial: ', num2str(trials)]);
+    for ind=1:sind-1
+        agent = susceptible(ind);
         mvx = stepsize * (rand()-.5);  %amount for x to move
         mvy = stepsize * (rand()-.5);  %amount for y to move
-        iPosX(ind) = iPosX(ind) + mvx; %updating positions
-        iPosY(ind) = iPosY(ind) + mvy;
-        if iPosX(ind)>xbound
+        agent.pos(1) = agent.pos(1) + mvx; %updating positions
+        agent.pos(2) = agent.pos(2) + mvy;
+        sXpos(ind) = agent.pos(1);
+        sYpos(ind) = agent.pos(2);
+        if agent.pos(1)>xbound
            % disp("trial " + trials + " moved " + iPosX(ind) +  " to " + xbound)
-           iPosX(ind) = xbound;
+           agent.pos(1) = xbound;
         end
-        if iPosX(ind)<-xbound
+        if agent.pos(1)<-xbound
            % disp("trial " + trials + " moved " + iPosX(ind) +  " to " + -xbound)
-           iPosX(ind) = -xbound;
+           agent.pos(1) = -xbound;
         end
-        if iPosY(ind)>ybound
+        if agent.pos(2)>ybound
            % disp("trial " + trials + " moved " + iPosY(ind) +  " to " + ybound)
-           iPosY(ind) = ybound;
+           agent.pos(2) = ybound;
         end
-        if iPosY(ind)<-ybound
+        if agent.pos(2)<-ybound
            % disp("trial " + trials + " moved "+ iPosY(ind) +  " to " + ybound)
-           iPosY(ind) = -ybound;
+           agent.pos(2) = -ybound;
         end
-        drawnow;
-    end 
+        % plot(agent.pos(1), agent.pos(2), 'g.');
+        sh.XData = sXpos(1:sind);
+        sh.YData = sYpos(1:sind);
+    end
+    % for i=1: iind-1
+    % end 
 end 
