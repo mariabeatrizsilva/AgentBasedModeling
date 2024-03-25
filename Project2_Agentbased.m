@@ -39,7 +39,6 @@ end
 stepsize = .1;
 numTrials = 100;
 for trials =1: numTrials
-    disp("move value = " + mv);
     for ind=1:numIndivs
         mark = 'g.'; %defaults to green for susceptible
         if iGrp(ind) == 'I'
@@ -58,7 +57,7 @@ for trials =1: numTrials
            disp("moved " + iPosX(ind) +  " to " + (iPosX(ind) + rand()-.5))
            iPosX(ind) = iPosX(ind) + rand()-.5;
         end
-        while iPosX(ind)<-10
+        while iPosX(ind)<-xbound
            disp("moved " + iPosX(ind) +  " to " + (iPosX(ind) + rand()-.5))
            iPosX(ind) = iPosX(ind) + rand()-.5;
         end
@@ -68,7 +67,7 @@ for trials =1: numTrials
         end
         while iPosY(ind)<-ybound
            disp("moved " + iPosY(ind) +  " to " + (iPosY(ind) + rand()-.5))
-           iPosY(ind) = iPosY(ind) - rand()-.5;
+           iPosY(ind) = iPosY(ind) + rand()-.5;
         end
         if trials ~= numTrials
             plot(iPosX(ind), iPosY(ind), mark, 'MarkerSize', 25);
