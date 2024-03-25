@@ -31,13 +31,13 @@ for ind=1:numIndivs
     iPosX(ind) = person.pos(1);
     iPosY(ind) = person.pos(2);
     iGrp(ind) = person.grp;
-    hp = plot(person.pos(1), person.pos(2), 'g.', 'MarkerSize', 25);
-    hold on;
 end 
 
 %Move the individuals
 stepsize = .1;
-numTrials = 100;
+numTrials = 20;
+handle = plot(iPosX(ind),iPosY(ind), 'g.', 'MarkerSize', 25)
+hold on;
 for trials =1: numTrials
     for ind=1:numIndivs
         mark = 'g.'; %defaults to green for susceptible
@@ -48,32 +48,28 @@ for trials =1: numTrials
         elseif iGrp(ind) == 'D'
             mark = 'k.';
         end
-        mv1 = stepsize * (rand()-.5);
-        mv2 = stepsize * (rand()-.5);
-        iPosX(ind) = iPosX(ind) + mv1;
-        iPosY(ind) = iPosY(ind) + mv2;
+        mvx = stepsize * (rand()-.5);
+        mvy = stepsize * (rand()-.5);
+        iPosX(ind) = iPosX(ind) + mvx;
+        iPosY(ind) = iPosY(ind) + mvy;
         while iPosX(ind)>xbound
-           redo = rand()-.5;
-           disp("moved " + iPosX(ind) +  " to " + (iPosX(ind) + rand()-.5))
+           % disp("moved " + iPosX(ind) +  " to " + (iPosX(ind) + rand()-.5))
            iPosX(ind) = iPosX(ind) + rand()-.5;
         end
         while iPosX(ind)<-xbound
-           disp("moved " + iPosX(ind) +  " to " + (iPosX(ind) + rand()-.5))
+           % disp("moved " + iPosX(ind) +  " to " + (iPosX(ind) + rand()-.5))
            iPosX(ind) = iPosX(ind) + rand()-.5;
         end
         while iPosY(ind)>ybound
-           disp("moved " + iPosY(ind) +  " to " + (iPosY(ind) + rand()-.5))
+           % disp("moved " + iPosY(ind) +  " to " + (iPosY(ind) + rand()-.5))
            iPosY(ind) = iPosY(ind) + rand()-.5;
         end
         while iPosY(ind)<-ybound
-           disp("moved " + iPosY(ind) +  " to " + (iPosY(ind) + rand()-.5))
+           % disp("moved " + iPosY(ind) +  " to " + (iPosY(ind) + rand()-.5))
            iPosY(ind) = iPosY(ind) + rand()-.5;
         end
-        if trials ~= numTrials
-            plot(iPosX(ind), iPosY(ind), mark, 'MarkerSize', 25);
-        else
-            plot(iPosX(ind), iPosY(ind), 'm.', 'MarkerSize', 25);
-        end 
-        drawnow update;
+        handle.XData = iPosX(1:numIndivs);
+        handle.YData = iPosY(1:numIndivs);
+        drawnow;
     end 
 end 
