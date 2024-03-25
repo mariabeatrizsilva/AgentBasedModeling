@@ -60,8 +60,8 @@ for trials =1: numTrials
         % elseif iGrp(ind) == 'D' %dead 
         %     hh.Color = 'k';
         else                    %still susceptible
-            hh.XData = iPosX(ind);
-            hh.YData = iPosY(ind);
+            hh.XData = iPosX(1:numIndivs);
+            hh.YData = iPosY(1:numIndivs);
         end
         mvx = stepsize * (rand()-.5);  %amount for x to move
         mvy = stepsize * (rand()-.5);  %amount for y to move
