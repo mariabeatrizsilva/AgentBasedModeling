@@ -8,16 +8,16 @@
 numIndivs = 100;  % number of people
 numTrials = 100;  % number of steps they take
 riskDist  = 1;    % each indiv will infect people who are riskDist away from them
-numIll    = 5;    % number of sick people to introduce
+numIll    = 10;    % number of sick people to introduce
 stepsize  = .1;   % how much the individuals move
-transmissionlimit = .7; %individuals will transmit infection if under this limit
+transmissionlimit = .8; %individuals will transmit infection if under this limit
 
 day  = 60*60*24;       % Day length (s).
 tmax = day * 10;       % Duration of the simulation (s).
 dt   = tmax/numTrials; % Calculates the duration of each time step.
 
 a = 5/day;
-b = 0.4/day;
+b = 0.1/day;
 c = 0.2/day;
 
 p1 = indiv; % one person
@@ -31,9 +31,9 @@ hold on;
 axis square;
 xlabel('x');
 ylabel('y');
-xbound = 12;
+xbound = 10;
 ybound = 10;
-axis([-.25 xbound+.25 -.25 ybound+.25]);
+axis([-.25 xbound+2.25 -.25 ybound+.25]);
 % grid on;
 
 %%Compute Initial Positions
@@ -56,7 +56,7 @@ for trials =1: numTrials
     t = trials*dt;
     for ind=1:numIndivs % move people
         agent = indivs(ind);
-        if grps(ind) == 'D'                                % don't move dead people
+        if grps(ind) == 'D'                    % dead people go to a separate section
             agent.pos(1) = 11;
         else 
             mvx = stepsize * (rand()-.5);      % amount for x to move
@@ -111,7 +111,7 @@ for trials =1: numTrials
     axis square;
     xlabel('x');
     ylabel('y');
-    axis([-.25,xbound+.25,-.25,ybound+.25])
+    axis([-.25,xbound+2.25,-.25,ybound+.25])
     drawnow;
     % check distances and infect people ..?
 end 
