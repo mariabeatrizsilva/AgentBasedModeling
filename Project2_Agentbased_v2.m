@@ -5,11 +5,18 @@
 % let the disease transfer and change the uninfected agents status to infected.
 % We iterate this process as our agents move around --> simulation.
 
-
 numIndivs = 100;  % number of people
 numTrials = 100; % number of steps they take
 riskDist  = 1;    % each indiv will infect people who are riskDist away from them
 numIll    = 5; % number of sick people to introduce
+
+day = 60*60*24 % Day length (s).
+tmax = day * 10 % Duration of the simulation (s).
+dt = tmax/numTrials % Calculates the duration of each time step.
+
+a = 5/day
+b = 0.5/day
+c = 0.2/day
 
 p1 = indiv; % one person
 p1.pos = [10*rand(),10*rand];
@@ -35,7 +42,7 @@ for ind=1:numIndivs
     person.pos = [10*rand(),10*rand];
     person.grp = 'S';
     grp(ind) = 'S'
-    if ind < 5
+    if ind < numIll
         person.grp = 'I'
         grps(ind) = 'I'
     end
@@ -63,6 +70,7 @@ for trials =1: numTrials
     hold off
     title(['Trial: ', num2str(trials)]);
     pause(.1)
+    t = trials*dt
     for ind=1:numIndivs % move susceptible people
         agent = indivs(ind);
         mvx = stepsize * (rand()-.5);  %amount for x to move
@@ -89,15 +97,27 @@ for trials =1: numTrials
             color = 'green';
         elseif grps(ind) == 'I'
             color = 'red';
+        elseif grps(ind) == 'R'
+            color = 'blue';
+        elseif grps(ind) == 'D'
+            color = 'black';
         end
         
         plot(agent.pos(1), agent.pos(2), '.', 'MarkerSize', 25, 'Color', color);
         hold on
-        if grps(ind) == 'S'
+        if grps(ind) == 'I'
+            if rand(1) < dt*b
+                grps(ind) = 'R'
+            elseif rand(1) > 1-dt*c
+                grps(ind) = 'D'
+            end
+        elseif grps(ind) == 'S'
             for new_ind=1:numIndivs
                 new_person = indivs(new_ind);
                 if grps(new_ind) == 'I'
-                    if norm(new_person.pos - agent.pos) < 1
+                    distance = norm(new_person.pos - agent.pos);
+                    transmission = dt * a * (1/distance)
+                    if transmission > 0.6
                         agent.grp = 'I';
                         grps(ind) = 'I';
                         break;

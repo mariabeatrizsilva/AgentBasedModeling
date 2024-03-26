@@ -5,16 +5,25 @@
 % let the disease transfer and change the uninfected agents status to infected.
 % We iterate this process as our agents move around --> simulation.
 
-
 numIndivs = 100;  % number of people
 numTrials = 100; % number of steps they take
 riskDist  = 1;    % each indiv will infect people who are riskDist away from them
 numIll    = 5; % number of sick people to introduce
 
+day = 60*60*24 % Day length (s).
+tmax = day * 10 % Duration of the simulation (s).
+dt = tmax/clockmax % Calculates the duration of each time step.
+
+a = 5/day
+b = 0.5/day
+c = 0.2/day
+
 p1 = indiv; % one person
 p1.pos = [10*rand(),10*rand];
 person.grp = 'S';
 indivs = createArray(1,numIndivs,FillValue=p1);
+grps = createArray(1,numIndivs,FillValue='S');
+
 
 % Create figure for plotting
 figure;
@@ -32,8 +41,10 @@ for ind=1:numIndivs
     person = indiv; 
     person.pos = [10*rand(),10*rand];
     person.grp = 'S';
-    if ind < 5
+    grp(ind) = 'S'
+    if ind < numIll
         person.grp = 'I'
+        grps(ind) = 'I'
     end
     indivs(ind) = person;
 end 
@@ -59,6 +70,7 @@ for trials =1: numTrials
     hold off
     title(['Trial: ', num2str(trials)]);
     pause(.1)
+    t = trial*dt
     for ind=1:numIndivs % move susceptible people
         agent = indivs(ind);
         mvx = stepsize * (rand()-.5);  %amount for x to move
@@ -81,20 +93,22 @@ for trials =1: numTrials
            % disp("trial " + trials + " moved "+ iPosY(ind) +  " to " + ybound)
            agent.pos(2) = -ybound;
         end
-        if agent.grp == 'S'
+        if grps(ind) == 'S'
             color = 'green';
-        elseif agent.grp == 'I'
+        elseif grps(ind) == 'I'
             color = 'red';
         end
         
         plot(agent.pos(1), agent.pos(2), '.', 'MarkerSize', 25, 'Color', color);
         hold on
-        if agent.grp == 'S'
+        if grps(ind) == 'S'
             for new_ind=1:numIndivs
                 new_person = indivs(new_ind);
-                if new_person.grp == 'I'
+                if grps(new_ind) == 'I'
                     if norm(new_person.pos - agent.pos) < 5
+                        if dt * a > 
                         agent.grp = 'I';
+                        grps(ind) = 'I';
                         break;
                     end
                 end
