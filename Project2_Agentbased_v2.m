@@ -5,12 +5,11 @@
 % let the disease transfer and change the uninfected agents status to infected.
 % We iterate this process as our agents move around --> simulation.
 
-numIndivs = 10;  % number of people
-numTrials = 200;  % number of steps they take
-riskDist  =   2;    % Maximum distance to infect someone
-numIll    =  2;    % number of sick people to introduce
-stepsize  =  .1;   % how much the individuals move
-
+numIndivs = 100;       % number of people
+numTrials =  2*2*25;   % number of steps they take
+riskDist  =   1;       % Maximum distance to infect someone
+numIll    =  20;       % number of sick people to introduce
+stepsize  =  .001;     % scales how much the individuals move
 day  = 60*60*24;       % Day length (s).
 tmax = day * 10;       % Duration of the simulation (s).
 dt   = tmax/numTrials; % Calculates the duration of each time step.
@@ -61,7 +60,6 @@ for trial =1: numTrials
     % pause(.1)
 
     t = trial*dt;
-    title(['Trial: ', num2str(trial), '  |  Day: ', num2str(t/day)]);
 
     I = 0;      % Infected
     S = 0;      % Susceptible 
@@ -75,8 +73,8 @@ for trial =1: numTrials
         else 
             mvx = stepsize * (rand()-.5);      % amount for x to move
             mvy = stepsize * (rand()-.5);      % amount for y to move
-            agent.pos(1) = agent.pos(1) + mvx; % updating positions
-            agent.pos(2) = agent.pos(2) + mvy;
+            agent.pos(1) = agent.pos(1) + sqrt(dt) * mvx; % updating positions
+            agent.pos(2) = agent.pos(2) + sqrt(dt) * mvy;
             if agent.pos(1)>xbound
                agent.pos(1) = xbound;
             end
@@ -144,7 +142,7 @@ for trial =1: numTrials
     axis([-.25,xbound+2.25,-.25,ybound+.25])
     xline(10.25);
     title(['Trial: ', num2str(trial), '  |  Day: ', num2str(t/day)]);
-    drawnow;
+    %drawnow;
     
 end 
 
