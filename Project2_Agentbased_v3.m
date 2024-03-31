@@ -6,7 +6,7 @@
 % We iterate this process as our agents move around --> simulation.
 
 numIndivs = 100;       % number of people
-numTrials = 100;       % number of steps they take
+numTrials = 25;       % number of steps they take
 riskDist  =   1;       % Maximum distance to infect someone
 numIll    =  20;       % number of sick people to introduce
 stepsize  = 150;       % scales how much the individuals move per step
@@ -14,8 +14,8 @@ day  = 60*60*24;       % Day length (s).
 tmax = day * 10;       % Duration of the simulation (s).
 dt   = tmax/numTrials; % Calculates the duration of each time step.
 
-a = 1.7/day ;            % Transmission Rate
-b = 0.01/day;            % Recovery Rate
+a = 1.7/day ;           % Transmission Rate
+b = 0.1/day;            % Recovery Rate
 c = 0.1/day;            % Death Rate
 
 p1 = indiv; % one person
@@ -30,7 +30,7 @@ xlabel('x');
 ylabel('y');
 xbound = 10;
 ybound = 10;
-axis([-.25 xbound+2.25 -.25 ybound+.25]);
+axis([-.25 xbound+2.25 -.25 ybound+1.25]);
 
 % Compute Initial Positions
 for ind=1:numIndivs
@@ -55,14 +55,12 @@ hold on;
 
 for trial =1: numTrials
     hold off
-
     t = trial*dt;
 
     I = 0;       % Infected
     S = 0;       % Susceptible 
     R = 0;       % Recovered
     D = 0;       % Deceased
-
     for ind=1:numIndivs % move people
         agent = indivs(ind);
         if indivs(ind).grp == 'D'                    % dead people go to a separate section
@@ -124,7 +122,17 @@ for trial =1: numTrials
             end
         end
     end    
-    
+
+    Stxt = [' S: ' num2str(S)];
+    Itxt = [' I: ' num2str(I)];
+    Rtxt = [' R: ' num2str(R)];
+    Dtxt = [' D: ' num2str(D)];
+
+    text( .25 ,10.75,Stxt,'Color', 'g');
+    text(1.25 ,10.75,Itxt,'Color', 'r');
+    text(2.25 ,10.75,Rtxt,'Color', 'b');
+    text(3.25 ,10.75,Dtxt,'Color', 'k');
+
     % Update t_save, Ssave, Isave, Rsave, Dsave
     t_save(trial+1) = t; 
     S_save(trial+1) = S;
@@ -135,7 +143,7 @@ for trial =1: numTrials
     axis equal;
     xlabel('x');
     ylabel('y');
-    axis([-.25,xbound+2.25,-.25,ybound+.25])
+    axis([-.25,xbound+2.25,-.25,ybound+1.25])
     xline(10.25);
     title(['Trial: ', num2str(trial), '  |  Day: ', num2str(t/day)]);
     drawnow;
