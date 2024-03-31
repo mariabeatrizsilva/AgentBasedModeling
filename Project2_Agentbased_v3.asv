@@ -13,6 +13,7 @@ stepsize  = 150;       % scales how much the individuals move per step
 day  = 60*60*24;       % Day length (s).
 tmax = day * 10;       % Duration of the simulation (s).
 dt   = tmax/numTrials; % Calculates the duration of each time step.
+autoImmune = 3;
 
 a = 1.7/day ;           % Transmission Rate
 b = 0.1/day;            % Recovery Rate
@@ -39,6 +40,9 @@ for ind=1:numIndivs
     if ind < numIll
         person.grp = 'I';
     end
+    if person.grp ~= 'I' 
+        
+    end 
     indivs(ind) = person;
 end 
 
@@ -92,7 +96,11 @@ for trial =1: numTrials
         elseif indivs(ind).grp == 'D'
             color = 'black';
         end
-        plot(agent.pos(1), agent.pos(2), '.', 'MarkerSize', 25, 'Color', color);
+        if agent.isImmune == 'Y'
+            plot(agent.pos(1), agent.pos(2), '.', 'MarkerSize', 25, 'Color', color);
+        else 
+
+        end 
         hold on
         if indivs(ind).grp == 'R'
             R = R + 1;
@@ -128,13 +136,11 @@ for trial =1: numTrials
     Rtxt = [' R: ' num2str(R)];
     Dtxt = [' D: ' num2str(D)];
 
-    text(4.5,11,Stxt);
-    text(4.5,11,Stxt);
-    text(4.5,11,Stxt);
-    text(4.5,11,Stxt);
+    text(4,10.75,Stxt,'Color', 'g');
+    text(5 ,10.75,Itxt,'Color', 'r');
+    text(6 ,10.75,Rtxt,'Color', 'b');
+    text(7,10.75,Dtxt,'Color', 'k');
 
-
-    
     % Update t_save, Ssave, Isave, Rsave, Dsave
     t_save(trial+1) = t; 
     S_save(trial+1) = S;

@@ -13,6 +13,7 @@ stepsize  = 150;       % scales how much the individuals move per step
 day  = 60*60*24;       % Day length (s).
 tmax = day * 10;       % Duration of the simulation (s).
 dt   = tmax/numTrials; % Calculates the duration of each time step.
+autoImmune = 3;
 
 a = 1.7/day ;           % Transmission Rate
 b = 0.1/day;            % Recovery Rate
@@ -33,12 +34,17 @@ ybound = 10;
 axis([-.25 xbound+2.25 -.25 ybound+1.25]);
 
 % Compute Initial Positions
+numAuto = 0;
 for ind=1:numIndivs
     person = indiv; 
     person.pos = [10*rand(),10*rand];
     if ind < numIll
         person.grp = 'I';
     end
+    if person.grp ~= 'I' && numAuto < autoImmune
+        person.isAutoimmune = 'Y';
+        numAuto = numAuto + 1;
+    end 
     indivs(ind) = person;
 end 
 
@@ -92,7 +98,11 @@ for trial =1: numTrials
         elseif indivs(ind).grp == 'D'
             color = 'black';
         end
-        plot(agent.pos(1), agent.pos(2), '.', 'MarkerSize', 25, 'Color', color);
+        if agent.isAutoimmune == 'Y'
+            plot(agent.pos(1), agent.pos(2), '*', 'MarkerSize', 15, 'Color', color);
+        else 
+            plot(agent.pos(1), agent.pos(2), '.', 'MarkerSize', 25, 'Color', color);
+        end 
         hold on
         if indivs(ind).grp == 'R'
             R = R + 1;

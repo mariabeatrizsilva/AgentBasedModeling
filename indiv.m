@@ -3,6 +3,7 @@ classdef indiv
     properties 
         pos = zeros(2);
         grp = 'S';
+        isAutoimmune = 'N'
     end 
     methods 
         function obj = set.pos(obj, vpos)
