@@ -99,7 +99,7 @@ for trial =1: numTrials
             color = 'black';
         end
         if agent.isAutoimmune == 'Y'
-            plot(agent.pos(1), agent.pos(2), '*', 'MarkerSize', 15, 'Color', color);
+            plot(agent.pos(1), agent.pos(2), 'o', 'MarkerSize', 6, 'Color', color);
         else 
             plot(agent.pos(1), agent.pos(2), '.', 'MarkerSize', 25, 'Color', color);
         end 
