@@ -128,10 +128,10 @@ for trial =1: numTrials
     Rtxt = [' R: ' num2str(R)];
     Dtxt = [' D: ' num2str(D)];
 
-    text( .25 ,10.75,Stxt,'Color', 'g');
-    text(1.25 ,10.75,Itxt,'Color', 'r');
-    text(2.25 ,10.75,Rtxt,'Color', 'b');
-    text(3.25 ,10.75,Dtxt,'Color', 'k');
+    text(4,10.75,Stxt,'Color', 'g');
+    text(5 ,10.75,Itxt,'Color', 'r');
+    text(6 ,10.75,Rtxt,'Color', 'b');
+    text(7,10.75,Dtxt,'Color', 'k');
 
     % Update t_save, Ssave, Isave, Rsave, Dsave
     t_save(trial+1) = t; 
