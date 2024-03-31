@@ -6,16 +6,16 @@
 % We iterate this process as our agents move around --> simulation.
 
 numIndivs = 100;       % number of people
-numTrials =  25;     % number of steps they take
+numTrials = 100;       % number of steps they take
 riskDist  =   1;       % Maximum distance to infect someone
 numIll    =  20;       % number of sick people to introduce
-stepsize  =   100;      % scales how much the individuals move per step
+stepsize  = 150;       % scales how much the individuals move per step
 day  = 60*60*24;       % Day length (s).
 tmax = day * 10;       % Duration of the simulation (s).
 dt   = tmax/numTrials; % Calculates the duration of each time step.
 
-a = 0.3/day;            % Transmission Rate
-b = 0.2/day;            % Recovery Rate
+a = 1.7/day ;            % Transmission Rate
+b = 0.01/day;            % Recovery Rate
 c = 0.1/day;            % Death Rate
 
 p1 = indiv; % one person
@@ -57,7 +57,6 @@ hold on;
 
 for trial =1: numTrials
     hold off
-    % pause(.1)
 
     t = trial*dt;
 
