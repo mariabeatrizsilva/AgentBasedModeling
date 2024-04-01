@@ -5,17 +5,17 @@
 % let the disease transfer and change the uninfected agents status to infected.
 % We iterate this process as our agents move around --> simulation.
 
-numIndivs = 100;       % number of people
-numTrials = 25;       % number of steps they take
-riskDist  =   1;       % Maximum distance to infect someone
-numIll    =  20;       % number of sick people to introduce
-stepsize  = 150;       % scales how much the individuals move per step
-day  = 60*60*24;       % Day length (s).
-tmax = day * 10;       % Duration of the simulation (s).
-dt   = tmax/numTrials; % Calculates the duration of each time step.
-autoImmune = 3;
+numIndivs     = 100;       % number of people
+numTrials     =  25;       % number of steps they take
+riskDist      =   1;       % Maximum distance to infect someone
+numIll        =  20;       % number of sick people to introduce
+stepsize      = 150;       % scales how much the individuals move per step
+day           = 60*60*24;       % Day length (s).
+tmax          = day * 10;       % Duration of the simulation (s).
+dt            = tmax/numTrials; % Calculates the duration of each time step.
+autoImmune    = 20;
 
-a = 1.7/day ;           % Transmission Rate
+a = 1.7/day;           % Transmission Rate
 b = 0.1/day;            % Recovery Rate
 c = 0.1/day;            % Death Rate
 
@@ -62,7 +62,6 @@ hold on;
 for trial =1: numTrials
     hold off
     t = trial*dt;
-
     I = 0;       % Infected
     S = 0;       % Susceptible 
     R = 0;       % Recovered
@@ -123,6 +122,9 @@ for trial =1: numTrials
                     distance = norm(new_person.pos - agent.pos);
                     if distance < riskDist
                         transmission = dt * a * (1 - distance/riskDist);
+                        if indivs(ind).isAutoimmune == 'Y' %% If autoimmune --> 50% more likely to be infected
+                            transmission = 1.5*transmission;
+                        end
                         if transmission > rand(1)
                             indivs(ind).grp = 'I';
                             break;
@@ -132,15 +134,14 @@ for trial =1: numTrials
             end
         end
     end    
-
     Stxt = [' S: ' num2str(S)];
     Itxt = [' I: ' num2str(I)];
     Rtxt = [' R: ' num2str(R)];
     Dtxt = [' D: ' num2str(D)];
 
     text(4,10.75,Stxt,'Color', 'g');
-    text(5 ,10.75,Itxt,'Color', 'r');
-    text(6 ,10.75,Rtxt,'Color', 'b');
+    text(5,10.75,Itxt,'Color', 'r');
+    text(6,10.75,Rtxt,'Color', 'b');
     text(7,10.75,Dtxt,'Color', 'k');
 
     % Update t_save, Ssave, Isave, Rsave, Dsave
