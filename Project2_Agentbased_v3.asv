@@ -1,9 +1,16 @@
+% numIndivs     = 100;       % number of people
+% numTrials     =  25;       % number of steps they take
+% riskDist      =   1;       % Maximum distance to infect someone
+% numIll        =  20;       % number of sick people to introduce
+% stepsize      = 150;       % scales how much the individuals move per step
+% tmax          = day * 10;       % Duration of the simulation (s).
+% dt            = tmax/numTrials; % Calculates the duration of each time step.
+% autoImmune    = 20;
 
-%% Calls to function 
-% a  b  c  numInd numTrials drisk numIll stepSize  days  special
+        % a  b  c  numInd numTrials drisk numIll stepSize  days  special
 agentbased(1.,.5,.01,   100,   25,    1,     20,    150,     10,  20);
 
-function agentbased(aIn,bIn,cIn, numIndivs, numTrials, riskDist, numIll, stepsize, numdays, spec)
+function agentbased(aIn,bIn,cIn, numIndivs, numTrials, riskDist, numIll, stepsize, numdays, autoImmune)
 %% Constants
 day           = 60*60*24;       % Day length (s).
 tmax          = day * numdays;  % Duration of the simulation (s).
@@ -22,20 +29,20 @@ xbound = 10;
 ybound = 10;
 axis([-.25 xbound+2.25 -.25 ybound+1.25]);
 
-%% Create array of individuals with initial positions and groups
-numSpec = 0;
-p1 = indiv; 
+%% Cre Array of individuals with initial positions and groups
+numAuto = 0;
+p1 = indiv; % One person
 p1.pos = [10*rand(),10*rand];
 indivs = createArray(1,numIndivs,FillValue=p1); % Array of people
-for ind=1:numIndivs 
+for ind=1:numIndivs
     person = indiv; 
     person.pos = [10*rand(),10*rand];
     if ind < numIll
         person.grp = 'I';
     end
-    if person.grp ~= 'I' && numSpec < spec
-        person.maskWearer = 'Y';
-        numSpec = numSpec + 1;
+    if person.grp ~= 'I' && numAuto < autoImmune
+        person.isAutoimmune = 'Y';
+        numAuto = numAuto + 1;
     end 
     indivs(ind) = person;
 end 
@@ -89,7 +96,7 @@ for trial=1: numTrials
         elseif indivs(ind).grp == 'D'
             color = 'black';
         end
-        if agent.maskWearer == 'Y'
+        if agent.isAutoimmune == 'Y'
             plot(agent.pos(1), agent.pos(2), 'o', 'MarkerSize', 6, 'Color', color);
         else 
             plot(agent.pos(1), agent.pos(2), '.', 'MarkerSize', 25, 'Color', color);
@@ -114,6 +121,9 @@ for trial=1: numTrials
                     distance = norm(new_person.pos - agent.pos);
                     if distance < riskDist
                         transmission = dt * a * (1 - distance/riskDist);
+                        if indivs(ind).isAutoimmune == 'Y' %% If autoimmune --> 50% more likely to be infected
+                            transmission = 1.5*transmission;
+                        end
                         if transmission > rand(1)
                             indivs(ind).grp = 'I';
                             break;

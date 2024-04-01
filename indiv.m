@@ -3,7 +3,8 @@ classdef indiv
     properties 
         pos = zeros(2);
         grp = 'S';
-        isAutoimmune = 'N'
+        maskWearer = 'N'
+        social = 'Y'
     end 
     methods 
         function obj = set.pos(obj, vpos)
@@ -20,3 +21,5 @@ classdef indiv
     end 
 end
 
+%%can make some individuals hyper-social !! --> change diffusion constant .
+%%
