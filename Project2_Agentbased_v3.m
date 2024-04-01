@@ -1,27 +1,25 @@
-% With our agents, we need to define their interactions and how those 
-% interactions change their properties. We need to check the distance 
-% between our agents and if they are close to an infected agent. 
-% If an uninfected agent is close to an infected one we will 
-% let the disease transfer and change the uninfected agents status to infected.
-% We iterate this process as our agents move around --> simulation.
+% numIndivs     = 100;       % number of people
+% numTrials     =  25;       % number of steps they take
+% riskDist      =   1;       % Maximum distance to infect someone
+% numIll        =  20;       % number of sick people to introduce
+% stepsize      = 150;       % scales how much the individuals move per step
+% tmax          = day * 10;       % Duration of the simulation (s).
+% dt            = tmax/numTrials; % Calculates the duration of each time step.
+% autoImmune    = 20;
 
-numIndivs     = 100;       % number of people
-numTrials     =  25;       % number of steps they take
-riskDist      =   1;       % Maximum distance to infect someone
-numIll        =  20;       % number of sick people to introduce
-stepsize      = 150;       % scales how much the individuals move per step
+
+agentbased(1.,.5,.01,100,25,1,20,150,10,20);
+
+function agentbased(aIn,bIn,cIn, numIndivs, numTrials, riskDist, numIll, stepsize, numdays, autoImmune)
 day           = 60*60*24;       % Day length (s).
-tmax          = day * 10;       % Duration of the simulation (s).
+tmax          = day * numdays;  % Duration of the simulation (s).
 dt            = tmax/numTrials; % Calculates the duration of each time step.
-autoImmune    = 20;
-
-a = 1.7/day;           % Transmission Rate
-b = 0.1/day;            % Recovery Rate
-c = 0.1/day;            % Death Rate
-
+a = aIn/day;           % Transmission Rate
+b = bIn/day;           % Recovery Rate
+c = cIn/day;           % Death Rate
 p1 = indiv; % one person
 p1.pos = [10*rand(),10*rand];
-indivs = createArray(1,numIndivs,FillValue=p1);
+indivs = createArray(1,numIndivs,FillValue=p1); % Array of people
 
 % Create figure for plotting
 figure;
@@ -59,7 +57,7 @@ I_save(1) = numIll;
 
 hold on;
 
-for trial =1: numTrials
+for trial=1: numTrials
     hold off
     t = trial*dt;
     I = 0;       % Infected
@@ -68,7 +66,7 @@ for trial =1: numTrials
     D = 0;       % Deceased
     for ind=1:numIndivs % move people
         agent = indivs(ind);
-        if indivs(ind).grp == 'D'                    % dead people go to a separate section
+        if indivs(ind).grp == 'D'              % dead people go to a separate section
             agent.pos(1) = 11.25;
         else 
             mvx = stepsize * (rand()-.5);      % amount for x to move
@@ -174,3 +172,4 @@ hD = plot(t_save, D_save, 'k', 'linewidth', 1.5);
 legend({'S','I','R', 'D'},'Location','northeast')
 
 drawnow
+end %ends the function 
