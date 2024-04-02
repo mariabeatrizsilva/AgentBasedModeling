@@ -67,6 +67,9 @@ I_save(1) = numIll;
 hold on;
 
 for trial=1: numTrials
+    subplot(1,2,1);
+    hold off
+    subplot(1,2,2);
     hold off
     t   = trial*dt;
     I   = 0;       % Infected
@@ -110,6 +113,7 @@ for trial=1: numTrials
         elseif indivs(ind).grp == 'D'
             color = 'black';
         end
+        subplot(1,2,2);
         if agent.maskWearer == 'Y'
             plot(agent.pos(1), agent.pos(2), 'o', 'MarkerSize', 3*7 * agent.sociability, 'Color', color);
         else 
@@ -147,6 +151,9 @@ for trial=1: numTrials
                     distance = norm(new_person.pos - agent.pos);
                     corr_arr(ind, new_ind) = 1 - distance/riskDist;
                     if distance < riskDist
+                        subplot(1,2,1);
+                        scatter(ind,new_ind, 'filled', 'MarkerFaceColor', 'black');
+                        hold on
                         transmission = maskEffect * dt * a * (1 - distance/riskDist);
                         if transmission > rand(1)
                             indivs(ind).grp = 'I';
@@ -157,6 +164,7 @@ for trial=1: numTrials
             end
         end
     end
+    subplot(1,2,2);
     Stxt = ['S: ' num2str(S)];
     Itxt = ['I: ' num2str(I)];
     Rtxt = ['R: ' num2str(R)];
@@ -194,6 +202,14 @@ for trial=1: numTrials
     xline(10.25);
     title(['Trial: ', num2str(trial), '  |  Day: ', num2str(t/day)]);
     drawnow;
+    subplot(1,2,1);
+    axis equal;
+    axis([0, numIndivs,0,numIndivs]);
+    grid on;
+    xlabel('Susceptible Individual');
+    ylabel('Infected Individual');
+    drawnow;
+
     
 end 
 
