@@ -1,15 +1,15 @@
 
 %% Calls to function 
-agentbased( 1.00, ...   % a
+agentbased( .75, ...   % a
             0.05, ...   % b
             0.02,...    % c
             100,...     % numIndivs
-            10, ...     % numTrials
+            100, ...     % numTrials
             1, ...      % riskDist
             20, ...     % numIll
             1, ...      % stepSize
-            10, ...     % numdays
-            20, ...     % numMasked
+            30, ...     % numdays
+            50, ...     % numMasked
             0.5, ...    % maskEffect
             'T');       % seeSociability
 
@@ -31,7 +31,7 @@ xlabel('x');
 ylabel('y');
 xbound = 10;
 ybound = 10;
-axis([-.25 xbound+2.25 -.25 ybound+1.25]);
+axis([-.5 xbound+2.25 -.25 ybound+1.75]);
 
 %% Create array of individuals with initial positions and groups
 numSpec = 0;
@@ -150,13 +150,19 @@ for trial=1: numTrials
             if indivs(ind).maskWearer == 'Y'
                 MWs = MWs+1;
             end 
-            for new_ind=1:numIndivs
+            for new_ind=1:numIndivs %loop over all individuals
                 new_person = indivs(new_ind);
-                if indivs(new_ind).grp == 'I'
+                if indivs(new_ind).grp == 'I' %if someone is sick see how far they are
                     distance = norm(new_person.pos - agent.pos);
-                    if distance < riskDist
-                        transmission = maskEffect * dt * a * (1 - distance/riskDist);
-                        if transmission > rand(1)
+                    if distance < riskDist %% if theyre close enough
+                        transmission = dt * a * (1 - distance/riskDist); % transmission chance
+                        if (indivs(new_ind).maskWearer == 'Y')       %% if they're wearing a mask --> transmission chance decreases 
+                            transmission = maskEffect * transmission;
+                        end
+                        if (indivs(ind).maskWearer == 'Y')           %% if we're wearing a mask --> transmission chance decreases 
+                            transmission = maskEffect * transmission;
+                        end
+                        if transmission > rand(1)                    %% make sick if bigger than a value
                             indivs(ind).grp = 'I';
                             break;
                         end
@@ -175,21 +181,22 @@ for trial=1: numTrials
     MWdtxt = ['D: ' num2str(MWd)];
     % Ttxt   = ['Total: ' num2str(S+I+R+D)];
     % MWTtxt = ['Total: ' num2str(MWs+MWi+MWr+MWd)];
-    text(.1,10.75,'Unmasked:','Color', 'k');
-    text(.1,10.25,'Masked:','Color', 'k');
-    text(2,10.75,Stxt,'Color', 'g');
-    text(4,10.75,Itxt,'Color', 'r');
-    text(6,10.75,Rtxt,'Color', 'b');
-    text(8,10.75,Dtxt,'Color', 'k');
-    text(2,10.25,MWstxt,'Color', 'g');
-    text(4,10.25,MWitxt,'Color', 'r');
-    text(6,10.25,MWrtxt,'Color', 'b');
-    text(8,10.25,MWdtxt,'Color', 'k');
+    shifty = .25;
+    text(.1,10.75+shifty,'Unmasked:','Color', 'k');
+    text(.1,10.25+shifty,'Masked:','Color', 'k');
+    text(2,10.75+shifty,Stxt,'Color', 'g');
+    text(4,10.75+shifty,   Itxt,'Color', 'r');
+    text(6,10.75+shifty,   Rtxt,'Color', 'b');
+    text(8,10.75+shifty,   Dtxt,'Color', 'k');
+    text(2,10.25+shifty,MWstxt,'Color', 'g');
+    text(4,10.25+shifty,MWitxt,'Color', 'r');
+    text(6,10.25+shifty,MWrtxt,'Color', 'b');
+    text(8,10.25+shifty,MWdtxt,'Color', 'k');
     % text(10.5,10.75,Ttxt,'Color', 'k');
     % text(10.5,10.25,MWTtxt,'Color', 'k');
      text(10.35,11.5,'% Infected','Color', 'k');
-     text(11.,10.75,[num2str((I+R+D)/(S+I+R+D))],'Color', 'k');
-     text(11.,10.25,[num2str((MWi+MWr+MWd)/(MWs+MWi+MWr+MWd))],'Color', 'k');
+     text(11.,10.75+shifty,[num2str((I+R+D)/(S+I+R+D))],'Color', 'k');
+     text(11.,10.25+shifty,[num2str((MWi+MWr+MWd)/(MWs+MWi+MWr+MWd))],'Color', 'k');
 
     % Update t_save, Ssave, Isave, Rsave, Dsave
     t_save(trial+1) = t; 
@@ -258,14 +265,14 @@ title('Masked vs Unmasked');
 % plot(t_save, I_save, 'r', 'linewidth', 1.5);
 % plot(t_save, R_save, 'b', 'linewidth', 1.5);
 % plot(t_save, D_save, 'k', 'linewidth', 1.5);
-% plot(t_save, MWS_save, 'Color', '#77AC30', 'linewidth', 1, 'LineStyle', '--');
-% plot(t_save, MWI_save, 'Color', '#A2142F', 'linewidth', 1, 'LineStyle', '--');
-% plot(t_save, MWR_save, 'Color', '#0072BD', 'linewidth', 1, 'LineStyle', '--');
-% plot(t_save, MWD_save, 'Color', '#7E2F8E', 'linewidth', 1, 'LineStyle', '--');
-plot(t_save, MWS_save, 'r', 'linewidth', 1, 'LineStyle', '--');
-plot(t_save, MWI_save, 'g', 'linewidth', 1, 'LineStyle', '--');
-plot(t_save, MWR_save, 'b', 'linewidth', 1, 'LineStyle', '--');
-plot(t_save, MWD_save, 'k', 'linewidth', 1, 'LineStyle', '--')
+ plot(t_save, MWS_save, 'Color', '#77AC30', 'linewidth', 1, 'LineStyle', '-');
+ plot(t_save, MWI_save, 'Color', '#A2142F', 'linewidth', 1, 'LineStyle', '-');
+ plot(t_save, MWR_save, 'Color', '#0072BD', 'linewidth', 1, 'LineStyle', '-');
+ plot(t_save, MWD_save, 'Color', '#7E2F8E', 'linewidth', 1, 'LineStyle', '-');
+% plot(t_save, MWS_save, 'r', 'linewidth', 1, 'LineStyle', '--');
+% plot(t_save, MWI_save, 'g', 'linewidth', 1, 'LineStyle', '--');
+% plot(t_save, MWR_save, 'b', 'linewidth', 1, 'LineStyle', '--');
+% plot(t_save, MWD_save, 'k', 'linewidth', 1, 'LineStyle', '--')
 plot(t_save, S_save-MWS_save, 'g', 'linewidth', 1, 'LineStyle', '-');
 plot(t_save, I_save-MWI_save, 'r', 'linewidth', 1, 'LineStyle', '-');
 plot(t_save, R_save-MWR_save, 'b', 'linewidth', 1, 'LineStyle', '-');
