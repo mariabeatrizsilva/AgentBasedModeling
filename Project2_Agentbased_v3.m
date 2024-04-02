@@ -79,8 +79,8 @@ for trial=1: numTrials
         if indivs(ind).grp == 'D'              % Dead people go to a separate section
             indivs(ind).pos(1) = 11.25;
         else 
-            mvx = agent.sociability * sqrt(dt) * stepSize * (rand()-.5) + 0.5 * agent.inertia(1);   % amount for x to move
-            mvy = agent.sociability * sqrt(dt) * stepSize * (rand()-.5) + 0.5 * agent.inertia(2);   % amount for y to move
+            mvx = agent.sociability * sqrt(dt) * stepSize * (sqrt(12)*rand()-(sqrt(12)/2)) + 0.5 * agent.inertia(1);   % amount for x to move
+            mvy = agent.sociability * sqrt(dt) * stepSize * (sqrt(12)*rand()-(sqrt(12)/2)) + 0.5 * agent.inertia(2);   % amount for y to move
             agent.inertia(1) = mvx;
             agent.inertia(2) = mvy;
             agent.pos(1) = agent.pos(1) + mvx;  % updating positions
