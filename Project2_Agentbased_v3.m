@@ -3,17 +3,17 @@
 agentbased( 1.00, ...   % a
             0.05, ...   % b
             0.02,...    % c
-            100,...     % numInd
+            100,...     % numIndivs
             30, ...     % numTrials
-            1, ...      % Drisk
+            1, ...      % riskDist
             20, ...     % numIll
             1, ...      % stepSize
-            10, ...     % days
-            20, ...     % special
+            10, ...     % numdays
+            20, ...     % spec
             0.5, ...    % maskEffect
-            'F');       % seeSociability
+            'T');       % seeSociability
 
-function agentbased(aIn,bIn,cIn, numIndivs, numTrials, riskDist, numIll, stepSizeIn, numdays, spec, maskEffect, seeSociability)
+function agentbased(aIn,bIn,cIn, numIndivs, numTrials, riskDist, numIll, stepSizeIn, numdays, numMasked, maskEffect, seeSociability)
 %% Constants
 day           = 60*60*24;               % Day length (s).
 tmax          = day * numdays;          % Duration of the simulation (s).
@@ -44,7 +44,7 @@ for ind=1:numIndivs
     if ind <= numIll %% Infect numIll of them 
         person.grp = 'I';
     end
-    if person.grp ~= 'I' && numSpec < spec %% Make some wear masks 
+    if person.grp ~= 'I' && numSpec < numMasked %% Make some wear masks 
         person.maskWearer = 'Y';
         numSpec = numSpec + 1;
     end 
@@ -81,8 +81,8 @@ for trial=1: numTrials
         if indivs(ind).grp == 'D'              % Dead people go to a separate section
             indivs(ind).pos(1) = 11.25;
         else 
-            mvx = agent.sociability * sqrt(dt* stepSize )* (sqrt(12)*rand()-(sqrt(12)/2)) + 0.5 * agent.inertia(1);   % amount for x to move
-            mvy = agent.sociability * sqrt(dt* stepSize )* (sqrt(12)*rand()-(sqrt(12)/2)) + 0.5 * agent.inertia(2);   % amount for y to move
+            mvx = agent.sociability *  sqrt(dt* stepSize)* (sqrt(12)*rand()-(sqrt(12)/2)) + 0.5 * agent.inertia(1);   % amount for x to move
+            mvy = agent.sociability *  sqrt(dt* stepSize)* (sqrt(12)*rand()-(sqrt(12)/2)) + 0.5 * agent.inertia(2);   % amount for y to move
             agent.inertia(1) = mvx;
             agent.inertia(2) = mvy;
             agent.pos(1) = agent.pos(1) + mvx;  % updating positions
@@ -111,7 +111,7 @@ for trial=1: numTrials
         end
         scalesociability = 1;
         if seeSociability == 'T'
-            scalesociability = 3* agent.sociability;
+            scalesociability = 3 * agent.sociability;
         end
         if agent.maskWearer == 'Y'
             plot(agent.pos(1), agent.pos(2), 'o', 'MarkerSize', 7  * scalesociability , 'Color', color);
