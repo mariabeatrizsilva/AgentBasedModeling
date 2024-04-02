@@ -4,7 +4,7 @@ agentbased( .75, ...   % a
             0.05, ...   % b
             0.02,...    % c
             100,...     % numIndivs
-            100, ...     % numTrials
+            50, ...     % numTrials
             1, ...      % riskDist
             20, ...     % numIll
             1, ...      % stepSize
@@ -72,6 +72,9 @@ MWI_save(1) = 0;
 hold on;
 
 for trial=1: numTrials
+    subplot(1,2,1);
+    hold off
+    subplot(1,2,2);
     hold off
     t   = trial*dt;
     I   = 0;       % Infected
@@ -115,6 +118,7 @@ for trial=1: numTrials
         elseif indivs(ind).grp == 'D'
             color = 'black';
         end
+        subplot(1,2,2);
         scalesociability = 1;
         if seeSociability == 'T'
             scalesociability = 3 * agent.sociability;
@@ -162,6 +166,9 @@ for trial=1: numTrials
                         if (indivs(ind).maskWearer == 'Y')           %% if we're wearing a mask --> transmission chance decreases 
                             transmission = maskEffect * transmission;
                         end
+                        subplot(1,2,1);
+                        scatter(ind,new_ind, 200*transmission, 'filled', 'MarkerFaceColor', [transmission 1-transmission 0]);
+                        hold on
                         if transmission > rand(1)                    %% make sick if bigger than a value
                             indivs(ind).grp = 'I';
                             break;
@@ -171,6 +178,7 @@ for trial=1: numTrials
             end
         end
     end
+    subplot(1,2,2);
     Stxt = ['S: ' num2str(S)];
     Itxt = ['I: ' num2str(I)];
     Rtxt = ['R: ' num2str(R)];
@@ -215,6 +223,12 @@ for trial=1: numTrials
     axis([-.25,xbound+2.25,-.25,ybound+1.25])
     xline(10.25);
     title(['Trial: ', num2str(trial), '  |  Day: ', num2str(t/day)]);
+    subplot(1,2,1);
+    axis equal;
+    axis([0, numIndivs,0,numIndivs]);
+    grid on;
+    xlabel('Susceptible Individual');
+    ylabel('Infected Individual');
     drawnow;
     
 end 
