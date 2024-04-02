@@ -7,7 +7,7 @@ agentbased( 1.00,...    % a
             0.05,...    % b
             0.02,...    % c
             50, ...     % numInd
-            100,  ...    % numTrials
+            10,  ...    % numTrials
             2,   ...    % Drisk
             3,  ...     % numIll
             2,   ...    % stepSize
@@ -70,6 +70,8 @@ for trial=1: numTrials
     subplot(1,2,1);
     hold off
     subplot(1,2,2);
+    axis equal;
+    axis([0, numIndivs,0,numIndivs]);
     hold off
     t   = trial*dt;
     I   = 0;       % Infected
