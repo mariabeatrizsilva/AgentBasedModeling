@@ -43,7 +43,7 @@ indivs = createArray(1,numIndivs,FillValue=p1); % Array of people
 corr_arr = zeros(numIndivs, numIndivs);
 for ind=1:numIndivs 
     person = indiv; 
-    person.pos = [10*rand(),10*rand];
+    person.pos = [10*rand(),10*rand()];
     if ind <= numIll %% Infect numIll of them 
         person.grp = 'I';
     end
