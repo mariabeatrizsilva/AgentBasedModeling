@@ -23,7 +23,7 @@ dt            = tmax/numTrials;         % The duration of each time step.
 a             = aIn/day;                % Transmission Rate (s).
 b             = bIn/day;                % Recovery Rate     (s).
 c             = cIn/day;                % Death Rate        (s).
-stepSize      = stepSizeIn; %/sqrt(day);   % Maximum daily step length (m/sqrt(s)).
+stepSize      = stepSizeIn/day; %/sqrt(day);   % Maximum daily step length (m/sqrt(s)).
 
 %% Create figure for plotting
 figure;
@@ -82,8 +82,8 @@ for trial=1: numTrials
         if indivs(ind).grp == 'D'              % Dead people go to a separate section
             indivs(ind).pos(1) = 11.25;
         else 
-            mvx = agent.sociability * sqrt(stepSize * dt) * (rand()-.5) + 0.5 * agent.inertia(1);   % amount for x to move
-            mvy = agent.sociability * sqrt(stepSize * dt) * (rand()-.5) + 0.5 * agent.inertia(2);   % amount for y to move
+            mvx = agent.sociability * sqrt(stepSize * dt) * (sqrt(12)*rand()-(sqrt(12)/2)) + 0.5 * agent.inertia(1);   % amount for x to move
+            mvy = agent.sociability * sqrt(stepSize * dt) * (sqrt(12)*rand()-(sqrt(12)/2)) + 0.5 * agent.inertia(2);   % amount for y to move
             agent.inertia(1) = mvx;
             agent.inertia(2) = mvy;
             agent.pos(1) = agent.pos(1) + mvx;  % updating positions
