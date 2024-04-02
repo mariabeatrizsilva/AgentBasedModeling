@@ -4,12 +4,12 @@ agentbased( 1.00, ...   % a
             0.05, ...   % b
             0.02,...    % c
             100,...     % numIndivs
-            30, ...     % numTrials
+            50, ...     % numTrials
             1, ...      % riskDist
             20, ...     % numIll
             1, ...      % stepSize
             10, ...     % numdays
-            20, ...     % spec
+            20, ...     % numMasked
             0.5, ...    % maskEffect
             'T');       % seeSociability
 
@@ -167,10 +167,10 @@ for trial=1: numTrials
     MWitxt = ['I: ' num2str(MWi)];
     MWrtxt = ['R: ' num2str(MWr)];
     MWdtxt = ['D: ' num2str(MWd)];
-    Ttxt   = ['Total: ' num2str(S+I+R+D)];
-    MWTtxt = ['Total: ' num2str(MWs+MWi+MWr+MWd)];
-    text(.1,10.75,'No mask:','Color', 'k');
-    text(.1,10.25,'Mask:','Color', 'k');
+    % Ttxt   = ['Total: ' num2str(S+I+R+D)];
+    % MWTtxt = ['Total: ' num2str(MWs+MWi+MWr+MWd)];
+    text(.1,10.75,'Unmasked:','Color', 'k');
+    text(.1,10.25,'Masked:','Color', 'k');
     text(2,10.75,Stxt,'Color', 'g');
     text(4,10.75,Itxt,'Color', 'r');
     text(6,10.75,Rtxt,'Color', 'b');
@@ -179,8 +179,10 @@ for trial=1: numTrials
     text(4,10.25,MWitxt,'Color', 'r');
     text(6,10.25,MWrtxt,'Color', 'b');
     text(8,10.25,MWdtxt,'Color', 'k');
-    text(10.5,10.75,Ttxt,'Color', 'k');
-    text(10.5,10.25,MWTtxt,'Color', 'k');
+    % text(10.5,10.75,Ttxt,'Color', 'k');
+    % text(10.5,10.25,MWTtxt,'Color', 'k');
+     text(10.25,10.75,['% Infected: ' num2str((I+R+D)/(S+I+R+D))],'Color', 'k');
+     text(10.25,10.25,['% Infected: ' num2str((MWi+MWr+MWd)/(MWs+MWi+MWr+MWd))],'Color', 'k');
 
     % Update t_save, Ssave, Isave, Rsave, Dsave
     t_save(trial+1) = t; 
