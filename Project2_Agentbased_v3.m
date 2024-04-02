@@ -1,16 +1,26 @@
 
 %% Calls to function 
-% a  b  c  numInd numTrials drisk numIll stepSize  days  special
-agentbased(1.,.5,.01,   100,   25,    1,     20,    150,     10,  20);
+agentbased( 1.00, ...   % a
+            0.05, ...   % b
+            0.02,...    % c
+            100,...     % numInd
+            25, ...     % numTrials
+            1, ...      % Drisk
+            20, ...     % numIll
+            1, ...      % stepSize
+            10, ...     % days
+            20, ...     % special
+            0.5);       % maskEffect
 
-function agentbased(aIn,bIn,cIn, numIndivs, numTrials, riskDist, numIll, stepsize, numdays, spec)
+function agentbased(aIn,bIn,cIn, numIndivs, numTrials, riskDist, numIll, stepSizeIn, numdays, spec, maskEffect)
 %% Constants
-day           = 60*60*24;       % Day length (s).
-tmax          = day * numdays;  % Duration of the simulation (s).
-dt            = tmax/numTrials; % The duration of each time step.
-a             = aIn/day;        % Transmission Rate (s)
-b             = bIn/day;        % Recovery Rate     (s)
-c             = cIn/day;        % Death Rate        (s)
+day           = 60*60*24;               % Day length (s).
+tmax          = day * numdays;          % Duration of the simulation (s).
+dt            = tmax/numTrials;         % The duration of each time step.
+a             = aIn/day;                % Transmission Rate (s).
+b             = bIn/day;                % Recovery Rate     (s).
+c             = cIn/day;                % Death Rate        (s).
+stepSize      = stepSizeIn/sqrt(day);   % Maximum daily step length (m/sqrt(s)).
 
 %% Create figure for plotting
 figure;
@@ -30,13 +40,14 @@ indivs = createArray(1,numIndivs,FillValue=p1); % Array of people
 for ind=1:numIndivs 
     person = indiv; 
     person.pos = [10*rand(),10*rand];
-    if ind < numIll
+    if ind <= numIll
         person.grp = 'I';
     end
     if person.grp ~= 'I' && numSpec < spec
         person.maskWearer = 'Y';
         numSpec = numSpec + 1;
     end 
+    person.sociability = 0.9*(rand(1)^2) + 0.1;
     indivs(ind) = person;
 end 
 
@@ -63,20 +74,22 @@ for trial=1: numTrials
         if indivs(ind).grp == 'D'              % dead people go to a separate section
             agent.pos(1) = 11.25;
         else 
-            mvx = stepsize * (rand()-.5);      % amount for x to move
-            mvy = stepsize * (rand()-.5);      % amount for y to move
-            agent.pos(1) = agent.pos(1) + sqrt(dt)/day * mvx; % updating positions
-            agent.pos(2) = agent.pos(2) + sqrt(dt)/day * mvy;
+            mvx = agent.sociability * sqrt(dt) * stepSize * (rand()-.5) + 0.5 * agent.inertia(1);   % amount for x to move
+            mvy = agent.sociability * sqrt(dt) * stepSize * (rand()-.5) + 0.5 * agent.inertia(2);   % amount for y to move
+            agent.inertia(1) = mvx;
+            agent.inertia(2) = mvy;
+            agent.pos(1) = agent.pos(1) + mvx;  % updating positions
+            agent.pos(2) = agent.pos(2) + mvy;
             if agent.pos(1)>xbound
                agent.pos(1) = xbound;
             end
-            if agent.pos(1)<-xbound
+            if agent.pos(1) <-xbound
                agent.pos(1) = -xbound;
             end
-            if agent.pos(2)>ybound
+            if agent.pos(2) > ybound
                agent.pos(2) = ybound;
             end
-            if agent.pos(2)<-ybound
+            if agent.pos(2) < -ybound
                agent.pos(2) = -ybound;
             end
         end
@@ -113,7 +126,7 @@ for trial=1: numTrials
                 if indivs(new_ind).grp == 'I'
                     distance = norm(new_person.pos - agent.pos);
                     if distance < riskDist
-                        transmission = dt * a * (1 - distance/riskDist);
+                        transmission = maskEffect * dt * a * (1 - distance/riskDist);
                         if transmission > rand(1)
                             indivs(ind).grp = 'I';
                             break;
@@ -123,15 +136,15 @@ for trial=1: numTrials
             end
         end
     end    
-    Stxt = [' S: ' num2str(S)];
-    Itxt = [' I: ' num2str(I)];
-    Rtxt = [' R: ' num2str(R)];
-    Dtxt = [' D: ' num2str(D)];
+    Stxt = ['S: ' num2str(S)];
+    Itxt = ['I: ' num2str(I)];
+    Rtxt = ['R: ' num2str(R)];
+    Dtxt = ['D: ' num2str(D)];
 
-    text(4,10.75,Stxt,'Color', 'g');
-    text(5,10.75,Itxt,'Color', 'r');
+    text(2,10.75,Stxt,'Color', 'g');
+    text(4,10.75,Itxt,'Color', 'r');
     text(6,10.75,Rtxt,'Color', 'b');
-    text(7,10.75,Dtxt,'Color', 'k');
+    text(8,10.75,Dtxt,'Color', 'k');
 
     % Update t_save, Ssave, Isave, Rsave, Dsave
     t_save(trial+1) = t; 
@@ -155,10 +168,10 @@ figure
 hold on
 
 % Plots total population graph
-hS = plot(t_save, S_save, 'g', 'linewidth', 1.5);
-hI = plot(t_save, I_save, 'r', 'linewidth', 1.5);
-hR = plot(t_save, R_save, 'b', 'linewidth', 1.5);
-hD = plot(t_save, D_save, 'k', 'linewidth', 1.5);
+plot(t_save, S_save, 'g', 'linewidth', 1.5);
+plot(t_save, I_save, 'r', 'linewidth', 1.5);
+plot(t_save, R_save, 'b', 'linewidth', 1.5);
+plot(t_save, D_save, 'k', 'linewidth', 1.5);
 
 legend({'S','I','R', 'D'},'Location','northeast')
 

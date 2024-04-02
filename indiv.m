@@ -3,8 +3,9 @@ classdef indiv
     properties 
         pos = zeros(2);
         grp = 'S';
-        maskWearer = 'N'
-        social = 'Y'
+        maskWearer = 'N';
+        sociability = 1;
+        inertia = zeros(2);
     end 
     methods 
         function obj = set.pos(obj, vpos)
