@@ -167,7 +167,7 @@ for trial=1: numTrials
                             transmission = maskEffect * transmission;
                         end
                         subplot(1,2,1);
-                        scatter(ind,new_ind, 200*transmission, 'filled', 'MarkerFaceColor', [transmission 1-transmission 0]);
+                        scatter(ind,new_ind, 200*2*transmission, 'filled', 'MarkerFaceColor', [transmission 1-transmission 0]);
                         hold on
                         if transmission > rand(1)                    %% make sick if bigger than a value
                             indivs(ind).grp = 'I';
