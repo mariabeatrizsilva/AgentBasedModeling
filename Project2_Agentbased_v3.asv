@@ -11,7 +11,7 @@ agentbased( 1.00, ...   % a
             10, ...     % days
             20, ...     % special
             0.5, ...    % maskEffect
-            'F');       % seeSociability
+            'T');       % seeSociability
 
 function agentbased(aIn,bIn,cIn, numIndivs, numTrials, riskDist, numIll, stepSizeIn, numdays, spec, maskEffect, seeSociability)
 %% Constants
@@ -49,7 +49,7 @@ for ind=1:numIndivs
         numSpec = numSpec + 1;
     end 
     if seeSociability == 'T'
-        person.sociability = 0.9*(rand(1)^2) + 0.1; %% People are social in diff ways
+    person.sociability = 0.9*(rand(1)^2) + 0.1; %% People are social in diff ways
     end
     indivs(ind) = person;
 end 
