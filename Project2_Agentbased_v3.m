@@ -3,17 +3,17 @@
 agentbased( 1.00, ...   % a
             0.05, ...   % b
             0.02,...    % c
-            100,...     % numInd
-            30, ...     % numTrials
-            1, ...      % Drisk
+            100,...     % numIndivs
+            10, ...     % numTrials
+            1, ...      % riskDist
             20, ...     % numIll
             1, ...      % stepSize
-            10, ...     % days
-            20, ...     % special
+            10, ...     % numdays
+            20, ...     % numMasked
             0.5, ...    % maskEffect
             'T');       % seeSociability
 
-function agentbased(aIn,bIn,cIn, numIndivs, numTrials, riskDist, numIll, stepSizeIn, numdays, spec, maskEffect, seeSociability)
+function agentbased(aIn,bIn,cIn, numIndivs, numTrials, riskDist, numIll, stepSizeIn, numdays, numMasked, maskEffect, seeSociability)
 %% Constants
 day           = 60*60*24;               % Day length (s).
 tmax          = day * numdays;          % Duration of the simulation (s).
@@ -21,7 +21,7 @@ dt            = tmax/numTrials;         % The duration of each time step.
 a             = aIn/day;                % Transmission Rate (s).
 b             = bIn/day;                % Recovery Rate     (s).
 c             = cIn/day;                % Death Rate        (s).
-stepSize      = stepSizeIn/sqrt(day);   % Maximum daily step length (m/sqrt(s)).
+stepSize      = stepSizeIn/day;   % Maximum daily step length (m/sqrt(s)).
 
 %% Create figure for plotting
 figure;
@@ -44,11 +44,13 @@ for ind=1:numIndivs
     if ind <= numIll %% Infect numIll of them 
         person.grp = 'I';
     end
-    if person.grp ~= 'I' && numSpec < spec %% Make some wear masks 
+    if person.grp ~= 'I' && numSpec < numMasked %% Make some wear masks 
         person.maskWearer = 'Y';
         numSpec = numSpec + 1;
     end 
-    person.sociability = 0.9*(rand(1)^2) + 0.1; %% People are social in diff ways
+    if seeSociability == 'T'
+        person.sociability = 0.9*(rand(1)^2) + 0.1; %% People are social in diff ways
+    end
     indivs(ind) = person;
 end 
 
@@ -57,9 +59,15 @@ S_save = zeros(1, numTrials+1);
 I_save = zeros(1, numTrials+1);
 R_save = zeros(1, numTrials+1);
 D_save = zeros(1, numTrials+1);
+MWS_save = zeros(1, numTrials+1);
+MWI_save = zeros(1, numTrials+1);
+MWR_save = zeros(1, numTrials+1);
+MWD_save = zeros(1, numTrials+1);
 
 S_save(1) = numIndivs - numIll;
 I_save(1) = numIll;
+MWS_save(1) = numMasked;
+MWI_save(1) = 0;
 
 hold on;
 
@@ -79,8 +87,8 @@ for trial=1: numTrials
         if indivs(ind).grp == 'D'              % Dead people go to a separate section
             indivs(ind).pos(1) = 11.25;
         else 
-            mvx = agent.sociability * sqrt(dt) * stepSize * (rand()-.5) + 0.5 * agent.inertia(1);   % amount for x to move
-            mvy = agent.sociability * sqrt(dt) * stepSize * (rand()-.5) + 0.5 * agent.inertia(2);   % amount for y to move
+            mvx = agent.sociability *  sqrt(dt* stepSize)* (sqrt(12)*rand()-(sqrt(12)/2)) + 0.5 * agent.inertia(1);   % amount for x to move
+            mvy = agent.sociability *  sqrt(dt* stepSize)* (sqrt(12)*rand()-(sqrt(12)/2)) + 0.5 * agent.inertia(2);   % amount for y to move
             agent.inertia(1) = mvx;
             agent.inertia(2) = mvy;
             agent.pos(1) = agent.pos(1) + mvx;  % updating positions
@@ -109,7 +117,7 @@ for trial=1: numTrials
         end
         scalesociability = 1;
         if seeSociability == 'T'
-            scalesociability = 3* agent.sociability;
+            scalesociability = 3 * agent.sociability;
         end
         if agent.maskWearer == 'Y'
             plot(agent.pos(1), agent.pos(2), 'o', 'MarkerSize', 7  * scalesociability , 'Color', color);
@@ -165,10 +173,10 @@ for trial=1: numTrials
     MWitxt = ['I: ' num2str(MWi)];
     MWrtxt = ['R: ' num2str(MWr)];
     MWdtxt = ['D: ' num2str(MWd)];
-    Ttxt   = ['Total: ' num2str(S+I+R+D)];
-    MWTtxt = ['Total: ' num2str(MWs+MWi+MWr+MWd)];
-    text(.1,10.75,'No mask:','Color', 'k');
-    text(.1,10.25,'Mask:','Color', 'k');
+    % Ttxt   = ['Total: ' num2str(S+I+R+D)];
+    % MWTtxt = ['Total: ' num2str(MWs+MWi+MWr+MWd)];
+    text(.1,10.75,'Unmasked:','Color', 'k');
+    text(.1,10.25,'Masked:','Color', 'k');
     text(2,10.75,Stxt,'Color', 'g');
     text(4,10.75,Itxt,'Color', 'r');
     text(6,10.75,Rtxt,'Color', 'b');
@@ -177,8 +185,11 @@ for trial=1: numTrials
     text(4,10.25,MWitxt,'Color', 'r');
     text(6,10.25,MWrtxt,'Color', 'b');
     text(8,10.25,MWdtxt,'Color', 'k');
-    text(10.5,10.75,Ttxt,'Color', 'k');
-    text(10.5,10.25,MWTtxt,'Color', 'k');
+    % text(10.5,10.75,Ttxt,'Color', 'k');
+    % text(10.5,10.25,MWTtxt,'Color', 'k');
+     text(10.35,11.5,'% Infected','Color', 'k');
+     text(11.,10.75,[num2str((I+R+D)/(S+I+R+D))],'Color', 'k');
+     text(11.,10.25,[num2str((MWi+MWr+MWd)/(MWs+MWi+MWr+MWd))],'Color', 'k');
 
     % Update t_save, Ssave, Isave, Rsave, Dsave
     t_save(trial+1) = t; 
@@ -186,6 +197,10 @@ for trial=1: numTrials
     I_save(trial+1) = I; 
     R_save(trial+1) = R; 
     D_save(trial+1) = D; 
+    MWS_save(trial+1) = MWs;
+    MWI_save(trial+1) = MWi; 
+    MWR_save(trial+1) = MWr; 
+    MWD_save(trial+1) = MWd; 
 
     axis equal;
     xlabel('x');
@@ -202,6 +217,7 @@ figure
 hold on
 
 % Plots total population graph
+title('Total Population');
 plot(t_save, S_save, 'g', 'linewidth', 1.5);
 plot(t_save, I_save, 'r', 'linewidth', 1.5);
 plot(t_save, R_save, 'b', 'linewidth', 1.5);
@@ -210,4 +226,51 @@ plot(t_save, D_save, 'k', 'linewidth', 1.5);
 legend({'S','I','R', 'D'},'Location','northeast')
 
 drawnow
+
+figure
+hold on
+title('Masked Population');
+plot(t_save, MWS_save,'g', 'linewidth', 1.5);
+plot(t_save, MWI_save, 'r','linewidth', 1.5);
+plot(t_save, MWR_save,'b', 'linewidth', 1.5);
+plot(t_save, MWD_save,'k', 'linewidth', 1.5);
+
+legend({'MWS','MWI','MWR', 'MWD'},'Location','northeast')
+
+drawnow;
+
+figure
+hold on
+title('Unmasked Population');
+plot(t_save, S_save-MWS_save, 'g', 'linewidth', 1.5);
+plot(t_save, I_save-MWI_save, 'r','linewidth', 1.5);
+plot(t_save, R_save-MWR_save, 'b','linewidth', 1.5);
+plot(t_save, D_save-MWD_save, 'k','linewidth', 1.5);
+
+legend({'UMS','UMI','UMR', 'UMD'},'Location','northeast')
+
+drawnow;
+
+figure
+hold on
+title('Masked vs Unmasked');
+% plot(t_save, S_save, 'g', 'linewidth', 1.5);
+% plot(t_save, I_save, 'r', 'linewidth', 1.5);
+% plot(t_save, R_save, 'b', 'linewidth', 1.5);
+% plot(t_save, D_save, 'k', 'linewidth', 1.5);
+% plot(t_save, MWS_save, 'Color', '#77AC30', 'linewidth', 1, 'LineStyle', '--');
+% plot(t_save, MWI_save, 'Color', '#A2142F', 'linewidth', 1, 'LineStyle', '--');
+% plot(t_save, MWR_save, 'Color', '#0072BD', 'linewidth', 1, 'LineStyle', '--');
+% plot(t_save, MWD_save, 'Color', '#7E2F8E', 'linewidth', 1, 'LineStyle', '--');
+plot(t_save, MWS_save, 'r', 'linewidth', 1, 'LineStyle', '--');
+plot(t_save, MWI_save, 'g', 'linewidth', 1, 'LineStyle', '--');
+plot(t_save, MWR_save, 'b', 'linewidth', 1, 'LineStyle', '--');
+plot(t_save, MWD_save, 'k', 'linewidth', 1, 'LineStyle', '--')
+plot(t_save, S_save-MWS_save, 'g', 'linewidth', 1, 'LineStyle', '-');
+plot(t_save, I_save-MWI_save, 'r', 'linewidth', 1, 'LineStyle', '-');
+plot(t_save, R_save-MWR_save, 'b', 'linewidth', 1, 'LineStyle', '-');
+plot(t_save, D_save-MWD_save, 'k', 'linewidth', 1, 'LineStyle', '-')
+
+legend({'MWS','MWI','MWR','MWD', 'UMS','UMI','UMR','UMD'},'Location','northeast')
+
 end %ends the function 

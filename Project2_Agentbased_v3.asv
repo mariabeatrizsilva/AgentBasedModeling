@@ -1,21 +1,19 @@
 
 %% Calls to function 
-
-%% diffusion coefficient is also in square root 
-%% 
-agentbased( 1.00,...    % a
-            0.05,...    % b
+agentbased( 1.00, ...   % a
+            0.05, ...   % b
             0.02,...    % c
-            50, ...     % numInd
-            100,  ...    % numTrials
-            2,   ...    % Drisk
-            3,  ...     % numIll
-            2,   ...    % stepSize
-            10,  ...    % days
-            0,  ...     % special
-            0.5);       % maskEffect
+            100,...     % numIndivs
+            10, ...     % numTrials
+            1, ...      % riskDist
+            20, ...     % numIll
+            1, ...      % stepSize
+            10, ...     % numdays
+            20, ...     % numMasked
+            0.5, ...    % maskEffect
+            'T');       % seeSociability
 
-function agentbased(aIn,bIn,cIn, numIndivs, numTrials, riskDist, numIll, stepSizeIn, numdays, spec, maskEffect)
+function agentbased(aIn,bIn,cIn, numIndivs, numTrials, riskDist, numIll, stepSizeIn, numdays, numMasked, maskEffect, seeSociability)
 %% Constants
 day           = 60*60*24;               % Day length (s).
 tmax          = day * numdays;          % Duration of the simulation (s).
@@ -40,18 +38,19 @@ numSpec = 0;
 p1 = indiv; 
 p1.pos = [10*rand(),10*rand];
 indivs = createArray(1,numIndivs,FillValue=p1); % Array of people
-corr_arr = zeros(numIndivs, numIndivs);
 for ind=1:numIndivs 
     person = indiv; 
-    person.pos = [10*rand(),10*rand()];
+    person.pos = [10*rand(),10*rand];
     if ind <= numIll %% Infect numIll of them 
         person.grp = 'I';
     end
-    if person.grp ~= 'I' && numSpec < spec %% Make some wear masks 
+    if person.grp ~= 'I' && numSpec < numMasked %% Make some wear masks 
         person.maskWearer = 'Y';
         numSpec = numSpec + 1;
     end 
-    person.sociability = 0.9*rand(1) + 0.1; %% People are social in diff ways
+    if seeSociability == 'T'
+        person.sociability = 0.9*(rand(1)^2) + 0.1; %% People are social in diff ways
+    end
     indivs(ind) = person;
 end 
 
@@ -60,16 +59,19 @@ S_save = zeros(1, numTrials+1);
 I_save = zeros(1, numTrials+1);
 R_save = zeros(1, numTrials+1);
 D_save = zeros(1, numTrials+1);
+MWS_save = zeros(1, numTrials+1);
+MWI_save = zeros(1, numTrials+1);
+MWR_save = zeros(1, numTrials+1);
+MWD_save = zeros(1, numTrials+1);
 
 S_save(1) = numIndivs - numIll;
 I_save(1) = numIll;
+MWS_save(1) = numMasked;
+MWI_save(1) = 0;
 
 hold on;
 
 for trial=1: numTrials
-    subplot(1,2,1);
-    hold off
-    subplot(1,2,2);
     hold off
     t   = trial*dt;
     I   = 0;       % Infected
@@ -85,8 +87,8 @@ for trial=1: numTrials
         if indivs(ind).grp == 'D'              % Dead people go to a separate section
             indivs(ind).pos(1) = 11.25;
         else 
-            mvx = agent.sociability * sqrt(stepSize * dt) * (sqrt(12)*rand()-(sqrt(12)/2)) + 0.5 * agent.inertia(1);   % amount for x to move
-            mvy = agent.sociability * sqrt(stepSize * dt) * (sqrt(12)*rand()-(sqrt(12)/2)) + 0.5 * agent.inertia(2);   % amount for y to move
+            mvx = agent.sociability *  sqrt(dt* stepSize)* (sqrt(12)*rand()-(sqrt(12)/2)) + 0.5 * agent.inertia(1);   % amount for x to move
+            mvy = agent.sociability *  sqrt(dt* stepSize)* (sqrt(12)*rand()-(sqrt(12)/2)) + 0.5 * agent.inertia(2);   % amount for y to move
             agent.inertia(1) = mvx;
             agent.inertia(2) = mvy;
             agent.pos(1) = agent.pos(1) + mvx;  % updating positions
@@ -113,11 +115,14 @@ for trial=1: numTrials
         elseif indivs(ind).grp == 'D'
             color = 'black';
         end
-        subplot(1,2,2);
+        scalesociability = 1;
+        if seeSociability == 'T'
+            scalesociability = 3 * agent.sociability;
+        end
         if agent.maskWearer == 'Y'
-            plot(agent.pos(1), agent.pos(2), 'o', 'MarkerSize', 3*7 * agent.sociability, 'Color', color);
+            plot(agent.pos(1), agent.pos(2), 'o', 'MarkerSize', 7  * scalesociability , 'Color', color);
         else 
-            plot(agent.pos(1), agent.pos(2), '.', 'MarkerSize', 3*25 * agent.sociability, 'Color', color);
+            plot(agent.pos(1), agent.pos(2), '.', 'MarkerSize', 25 * scalesociability, 'Color', color);
         end 
         hold on
         if indivs(ind).grp == 'R'
@@ -149,11 +154,7 @@ for trial=1: numTrials
                 new_person = indivs(new_ind);
                 if indivs(new_ind).grp == 'I'
                     distance = norm(new_person.pos - agent.pos);
-                    corr_arr(ind, new_ind) = 1 - distance/riskDist;
                     if distance < riskDist
-                        subplot(1,2,1);
-                        scatter(ind,new_ind, 'filled', 'MarkerFaceColor', 'black');
-                        hold on
                         transmission = maskEffect * dt * a * (1 - distance/riskDist);
                         if transmission > rand(1)
                             indivs(ind).grp = 'I';
@@ -164,7 +165,6 @@ for trial=1: numTrials
             end
         end
     end
-    subplot(1,2,2);
     Stxt = ['S: ' num2str(S)];
     Itxt = ['I: ' num2str(I)];
     Rtxt = ['R: ' num2str(R)];
@@ -173,10 +173,10 @@ for trial=1: numTrials
     MWitxt = ['I: ' num2str(MWi)];
     MWrtxt = ['R: ' num2str(MWr)];
     MWdtxt = ['D: ' num2str(MWd)];
-    Ttxt   = ['Total: ' num2str(S+I+R+D)];
-    MWTtxt = ['Total: ' num2str(MWs+MWi+MWr+MWd)];
-    text(.1,10.75,'No mask:','Color', 'k');
-    text(.1,10.25,'Mask:','Color', 'k');
+    % Ttxt   = ['Total: ' num2str(S+I+R+D)];
+    % MWTtxt = ['Total: ' num2str(MWs+MWi+MWr+MWd)];
+    text(.1,10.75,'Unmasked:','Color', 'k');
+    text(.1,10.25,'Masked:','Color', 'k');
     text(2,10.75,Stxt,'Color', 'g');
     text(4,10.75,Itxt,'Color', 'r');
     text(6,10.75,Rtxt,'Color', 'b');
@@ -185,8 +185,11 @@ for trial=1: numTrials
     text(4,10.25,MWitxt,'Color', 'r');
     text(6,10.25,MWrtxt,'Color', 'b');
     text(8,10.25,MWdtxt,'Color', 'k');
-    text(10.5,10.75,Ttxt,'Color', 'k');
-    text(10.5,10.25,MWTtxt,'Color', 'k');
+    % text(10.5,10.75,Ttxt,'Color', 'k');
+    % text(10.5,10.25,MWTtxt,'Color', 'k');
+     text(10.35,11.5,'% Infected','Color', 'k');
+     text(11.,10.75,[num2str((I+R+D)/(S+I+R+D))],'Color', 'k');
+     text(11.,10.25,[num2str((MWi+MWr+MWd)/(MWs+MWi+MWr+MWd))],'Color', 'k');
 
     % Update t_save, Ssave, Isave, Rsave, Dsave
     t_save(trial+1) = t; 
@@ -194,6 +197,10 @@ for trial=1: numTrials
     I_save(trial+1) = I; 
     R_save(trial+1) = R; 
     D_save(trial+1) = D; 
+    MWS_save(trial+1) = MWs;
+    MWI_save(trial+1) = MWi; 
+    MWR_save(trial+1) = MWr; 
+    MWD_save(trial+1) = MWd; 
 
     axis equal;
     xlabel('x');
@@ -202,14 +209,6 @@ for trial=1: numTrials
     xline(10.25);
     title(['Trial: ', num2str(trial), '  |  Day: ', num2str(t/day)]);
     drawnow;
-    subplot(1,2,1);
-    axis equal;
-    axis([0, numIndivs,0,numIndivs]);
-    grid on;
-    xlabel('Susceptible Individual');
-    ylabel('Infected Individual');
-    drawnow;
-
     
 end 
 
@@ -218,6 +217,7 @@ figure
 hold on
 
 % Plots total population graph
+title('Total Population');
 plot(t_save, S_save, 'g', 'linewidth', 1.5);
 plot(t_save, I_save, 'r', 'linewidth', 1.5);
 plot(t_save, R_save, 'b', 'linewidth', 1.5);
@@ -226,4 +226,31 @@ plot(t_save, D_save, 'k', 'linewidth', 1.5);
 legend({'S','I','R', 'D'},'Location','northeast')
 
 drawnow
+
+figure
+hold on
+title('Masked Population');
+plot(t_save, MWS_save, 'Color', '#77AC30', 'linewidth', 1.5);
+plot(t_save, MWI_save, 'Color', '#A2142F', 'linewidth', 1.5);
+plot(t_save, MWR_save, 'Color', '#0072BD', 'linewidth', 1.5);
+plot(t_save, MWD_save, 'Color', '#7E2F8E', 'linewidth', 1.5);
+
+legend({'MWS','MWI','MWR', 'MWD'},'Location','northeast')
+
+drawnow;
+
+figure
+hold on
+title('Juxtaposed');
+plot(t_save, S_save, 'g', 'linewidth', 1.5);
+plot(t_save, I_save, 'r', 'linewidth', 1.5);
+plot(t_save, R_save, 'b', 'linewidth', 1.5);
+plot(t_save, D_save, 'k', 'linewidth', 1.5);
+plot(t_save, MWS_save, 'Color', '#77AC30', 'linewidth', 1, 'LineStyle', ':');
+plot(t_save, MWI_save, 'Color', '#A2142F', 'linewidth', 1);
+plot(t_save, MWR_save, 'Color', '#0072BD', 'linewidth', 1);
+plot(t_save, MWD_save, 'Color', '#7E2F8E', 'linewidth', 1);
+
+legend({'S','I','R', 'D','MWS','MWI','MWR','MWD'},'Location','northeast')
+
 end %ends the function 
