@@ -4,7 +4,7 @@ agentbased( 1.00, ...   % a
             0.05, ...   % b
             0.02,...    % c
             100,...     % numIndivs
-            50, ...     % numTrials
+            10, ...     % numTrials
             1, ...      % riskDist
             20, ...     % numIll
             1, ...      % stepSize
@@ -59,9 +59,15 @@ S_save = zeros(1, numTrials+1);
 I_save = zeros(1, numTrials+1);
 R_save = zeros(1, numTrials+1);
 D_save = zeros(1, numTrials+1);
+MWS_save = zeros(1, numTrials+1);
+MWI_save = zeros(1, numTrials+1);
+MWR_save = zeros(1, numTrials+1);
+MWD_save = zeros(1, numTrials+1);
 
 S_save(1) = numIndivs - numIll;
 I_save(1) = numIll;
+MWS_save(1) = numMasked;
+MWI_save(1) = 0;
 
 hold on;
 
@@ -181,8 +187,9 @@ for trial=1: numTrials
     text(8,10.25,MWdtxt,'Color', 'k');
     % text(10.5,10.75,Ttxt,'Color', 'k');
     % text(10.5,10.25,MWTtxt,'Color', 'k');
-     text(10.25,10.75,['% Infected: ' num2str((I+R+D)/(S+I+R+D))],'Color', 'k');
-     text(10.25,10.25,['% Infected: ' num2str((MWi+MWr+MWd)/(MWs+MWi+MWr+MWd))],'Color', 'k');
+     text(10.35,11.5,'% Infected','Color', 'k');
+     text(11.,10.75,[num2str((I+R+D)/(S+I+R+D))],'Color', 'k');
+     text(11.,10.25,[num2str((MWi+MWr+MWd)/(MWs+MWi+MWr+MWd))],'Color', 'k');
 
     % Update t_save, Ssave, Isave, Rsave, Dsave
     t_save(trial+1) = t; 
@@ -190,6 +197,10 @@ for trial=1: numTrials
     I_save(trial+1) = I; 
     R_save(trial+1) = R; 
     D_save(trial+1) = D; 
+    MWS_save(trial+1) = MWs;
+    MWI_save(trial+1) = MWi; 
+    MWR_save(trial+1) = MWr; 
+    MWD_save(trial+1) = MWd; 
 
     axis equal;
     xlabel('x');
@@ -206,6 +217,7 @@ figure
 hold on
 
 % Plots total population graph
+title('Total Population');
 plot(t_save, S_save, 'g', 'linewidth', 1.5);
 plot(t_save, I_save, 'r', 'linewidth', 1.5);
 plot(t_save, R_save, 'b', 'linewidth', 1.5);
@@ -214,4 +226,51 @@ plot(t_save, D_save, 'k', 'linewidth', 1.5);
 legend({'S','I','R', 'D'},'Location','northeast')
 
 drawnow
+
+figure
+hold on
+title('Masked Population');
+plot(t_save, MWS_save,'g', 'linewidth', 1.5);
+plot(t_save, MWI_save, 'r','linewidth', 1.5);
+plot(t_save, MWR_save,'b', 'linewidth', 1.5);
+plot(t_save, MWD_save,'k', 'linewidth', 1.5);
+
+legend({'MWS','MWI','MWR', 'MWD'},'Location','northeast')
+
+drawnow;
+
+figure
+hold on
+title('Unmasked Population');
+plot(t_save, S_save-MWS_save, 'g', 'linewidth', 1.5);
+plot(t_save, I_save-MWI_save, 'r','linewidth', 1.5);
+plot(t_save, R_save-MWR_save, 'b','linewidth', 1.5);
+plot(t_save, D_save-MWD_save, 'k','linewidth', 1.5);
+
+legend({'UMS','UMI','UMR', 'UMD'},'Location','northeast')
+
+drawnow;
+
+figure
+hold on
+title('Masked vs Unmasked');
+% plot(t_save, S_save, 'g', 'linewidth', 1.5);
+% plot(t_save, I_save, 'r', 'linewidth', 1.5);
+% plot(t_save, R_save, 'b', 'linewidth', 1.5);
+% plot(t_save, D_save, 'k', 'linewidth', 1.5);
+% plot(t_save, MWS_save, 'Color', '#77AC30', 'linewidth', 1, 'LineStyle', '--');
+% plot(t_save, MWI_save, 'Color', '#A2142F', 'linewidth', 1, 'LineStyle', '--');
+% plot(t_save, MWR_save, 'Color', '#0072BD', 'linewidth', 1, 'LineStyle', '--');
+% plot(t_save, MWD_save, 'Color', '#7E2F8E', 'linewidth', 1, 'LineStyle', '--');
+plot(t_save, MWS_save, 'r', 'linewidth', 1, 'LineStyle', '--');
+plot(t_save, MWI_save, 'g', 'linewidth', 1, 'LineStyle', '--');
+plot(t_save, MWR_save, 'b', 'linewidth', 1, 'LineStyle', '--');
+plot(t_save, MWD_save, 'k', 'linewidth', 1, 'LineStyle', '--')
+plot(t_save, S_save-MWS_save, 'g', 'linewidth', 1, 'LineStyle', '-');
+plot(t_save, I_save-MWI_save, 'r', 'linewidth', 1, 'LineStyle', '-');
+plot(t_save, R_save-MWR_save, 'b', 'linewidth', 1, 'LineStyle', '-');
+plot(t_save, D_save-MWD_save, 'k', 'linewidth', 1, 'LineStyle', '-')
+
+legend({'MWS','MWI','MWR','MWD', 'UMS','UMI','UMR','UMD'},'Location','northeast')
+
 end %ends the function 
