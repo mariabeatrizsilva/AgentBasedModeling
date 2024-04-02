@@ -6,11 +6,11 @@
 agentbased( 1.00,...    % a
             0.05,...    % b
             0.02,...    % c
-            10, ...     % numInd
-            50,  ...    % numTrials
+            50, ...     % numInd
+            100,  ...    % numTrials
             2,   ...    % Drisk
             3,  ...     % numIll
-            1,   ...    % stepSize
+            2,   ...    % stepSize
             10,  ...    % days
             0,  ...     % special
             0.5);       % maskEffect
@@ -23,7 +23,7 @@ dt            = tmax/numTrials;         % The duration of each time step.
 a             = aIn/day;                % Transmission Rate (s).
 b             = bIn/day;                % Recovery Rate     (s).
 c             = cIn/day;                % Death Rate        (s).
-stepSize      = stepSizeIn; %/sqrt(day);   % Maximum daily step length (m/sqrt(s)).
+stepSize      = stepSizeIn/day;   % Maximum daily step length (m/sqrt(s)).
 
 %% Create figure for plotting
 figure;
@@ -51,7 +51,7 @@ for ind=1:numIndivs
         person.maskWearer = 'Y';
         numSpec = numSpec + 1;
     end 
-    person.sociability = 0.9*(rand(1)^2) + 0.1; %% People are social in diff ways
+    person.sociability = 0.9*rand(1) + 0.1; %% People are social in diff ways
     indivs(ind) = person;
 end 
 
