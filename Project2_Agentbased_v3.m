@@ -213,7 +213,7 @@ for trial=1: numTrials
 end 
 
 figure
-
+subplot(2,2,1);
 hold on
 
 % Plots total population graph
@@ -227,7 +227,7 @@ legend({'S','I','R', 'D'},'Location','northeast')
 
 drawnow
 
-figure
+subplot(2,2,2);
 hold on
 title('Masked Population');
 plot(t_save, MWS_save,'g', 'linewidth', 1.5);
@@ -239,7 +239,7 @@ legend({'MWS','MWI','MWR', 'MWD'},'Location','northeast')
 
 drawnow;
 
-figure
+subplot(2,2,3);
 hold on
 title('Unmasked Population');
 plot(t_save, S_save-MWS_save, 'g', 'linewidth', 1.5);
@@ -251,7 +251,7 @@ legend({'UMS','UMI','UMR', 'UMD'},'Location','northeast')
 
 drawnow;
 
-figure
+subplot(2,2,4);
 hold on
 title('Masked vs Unmasked');
 % plot(t_save, S_save, 'g', 'linewidth', 1.5);
