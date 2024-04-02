@@ -1,19 +1,18 @@
 
 %% Calls to function 
-agentbased( 1.00, ...   % a
-            0.05, ...   % b
+agentbased( 1.00,...    % a
+            0.05,...    % b
             0.02,...    % c
-            100,...     % numInd
-            30, ...     % numTrials
-            1, ...      % Drisk
-            20, ...     % numIll
-            1, ...      % stepSize
-            10, ...     % days
-            20, ...     % special
-            0.5, ...    % maskEffect
-            'T');       % seeSociability
+            100, ...    % numInd
+            30,  ...    % numTrials
+            1,   ...    % Drisk
+            20,  ...    % numIll
+            1,   ...    % stepSize
+            10,  ...    % days
+            20,  ...    % special
+            0.5);       % maskEffect
 
-function agentbased(aIn,bIn,cIn, numIndivs, numTrials, riskDist, numIll, stepSizeIn, numdays, spec, maskEffect, seeSociability)
+function agentbased(aIn,bIn,cIn, numIndivs, numTrials, riskDist, numIll, stepSizeIn, numdays, spec, maskEffect)
 %% Constants
 day           = 60*60*24;               % Day length (s).
 tmax          = day * numdays;          % Duration of the simulation (s).
@@ -38,6 +37,7 @@ numSpec = 0;
 p1 = indiv; 
 p1.pos = [10*rand(),10*rand];
 indivs = createArray(1,numIndivs,FillValue=p1); % Array of people
+corr_arr = createArray(numIndivs, numIndivs);
 for ind=1:numIndivs 
     person = indiv; 
     person.pos = [10*rand(),10*rand];
@@ -107,14 +107,10 @@ for trial=1: numTrials
         elseif indivs(ind).grp == 'D'
             color = 'black';
         end
-        scalesociability = 1;
-        if seeSociability == 'T'
-            scalesociability = 3* agent.sociability;
-        end
         if agent.maskWearer == 'Y'
-            plot(agent.pos(1), agent.pos(2), 'o', 'MarkerSize', 7  * scalesociability , 'Color', color);
+            plot(agent.pos(1), agent.pos(2), 'o', 'MarkerSize', 3*7 * agent.sociability, 'Color', color);
         else 
-            plot(agent.pos(1), agent.pos(2), '.', 'MarkerSize', 25 * scalesociability, 'Color', color);
+            plot(agent.pos(1), agent.pos(2), '.', 'MarkerSize', 3*25 * agent.sociability, 'Color', color);
         end 
         hold on
         if indivs(ind).grp == 'R'
