@@ -201,7 +201,6 @@ for trial=1: numTrials
     axis([-.25,xbound+2.25,-.25,ybound+1.25])
     xline(10.25);
     title(['Trial: ', num2str(trial), '  |  Day: ', num2str(t/day)]);
-    drawnow;
     subplot(1,2,1);
     axis equal;
     axis([0, numIndivs,0,numIndivs]);
