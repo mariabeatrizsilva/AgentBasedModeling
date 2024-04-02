@@ -1,15 +1,18 @@
 
 %% Calls to function 
+
+%% diffusion coefficient is also in square root 
+%% 
 agentbased( 1.00,...    % a
             0.05,...    % b
             0.02,...    % c
-            100, ...    % numInd
-            30,  ...    % numTrials
-            1,   ...    % Drisk
-            20,  ...    % numIll
+            10, ...     % numInd
+            50,  ...    % numTrials
+            2,   ...    % Drisk
+            3,  ...     % numIll
             1,   ...    % stepSize
             10,  ...    % days
-            20,  ...    % special
+            0,  ...     % special
             0.5);       % maskEffect
 
 function agentbased(aIn,bIn,cIn, numIndivs, numTrials, riskDist, numIll, stepSizeIn, numdays, spec, maskEffect)
@@ -20,7 +23,7 @@ dt            = tmax/numTrials;         % The duration of each time step.
 a             = aIn/day;                % Transmission Rate (s).
 b             = bIn/day;                % Recovery Rate     (s).
 c             = cIn/day;                % Death Rate        (s).
-stepSize      = stepSizeIn/sqrt(day);   % Maximum daily step length (m/sqrt(s)).
+stepSize      = stepSizeIn/; %/sqrt(day);   % Maximum daily step length (m/sqrt(s)).
 
 %% Create figure for plotting
 figure;
@@ -79,8 +82,8 @@ for trial=1: numTrials
         if indivs(ind).grp == 'D'              % Dead people go to a separate section
             indivs(ind).pos(1) = 11.25;
         else 
-            mvx = agent.sociability * sqrt(dt) * stepSize * (rand()-.5) + 0.5 * agent.inertia(1);   % amount for x to move
-            mvy = agent.sociability * sqrt(dt) * stepSize * (rand()-.5) + 0.5 * agent.inertia(2);   % amount for y to move
+            mvx = agent.sociability * sqrt(stepSize * dt) * (rand()-.5) + 0.5 * sqrt(agent.inertia(1));   % amount for x to move
+            mvy = agent.sociability * sqrt(stepSize * dt) * (rand()-.5) + 0.5 * sqrt(agent.inertia(2));   % amount for y to move
             agent.inertia(1) = mvx;
             agent.inertia(2) = mvy;
             agent.pos(1) = agent.pos(1) + mvx;  % updating positions
@@ -142,7 +145,7 @@ for trial=1: numTrials
                 new_person = indivs(new_ind);
                 if indivs(new_ind).grp == 'I'
                     distance = norm(new_person.pos - agent.pos);
-                    corr_arr(ind, new_ind) 
+                    corr_arr(ind, new_ind) = 1 - distance/riskDist;
                     if distance < riskDist
                         transmission = maskEffect * dt * a * (1 - distance/riskDist);
                         if transmission > rand(1)
