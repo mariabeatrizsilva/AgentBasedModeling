@@ -250,30 +250,6 @@ drawnow
 
 subplot(2,2,2);
 hold on
-title('Masked Population');
-plot(t_save, MWS_save,'g', 'linewidth', 1.5);
-plot(t_save, MWI_save, 'r','linewidth', 1.5);
-plot(t_save, MWR_save,'b', 'linewidth', 1.5);
-plot(t_save, MWD_save,'k', 'linewidth', 1.5);
-
-legend({'MWS','MWI','MWR', 'MWD'},'Location','northeast')
-
-drawnow;
-
-subplot(2,2,3);
-hold on
-title('Unmasked Population');
-plot(t_save, S_save-MWS_save, 'g', 'linewidth', 1.5);
-plot(t_save, I_save-MWI_save, 'r','linewidth', 1.5);
-plot(t_save, R_save-MWR_save, 'b','linewidth', 1.5);
-plot(t_save, D_save-MWD_save, 'k','linewidth', 1.5);
-
-legend({'UMS','UMI','UMR', 'UMD'},'Location','northeast')
-
-drawnow;
-
-subplot(2,2,4);
-hold on
 title('Masked vs Unmasked');
 % plot(t_save, S_save, 'g', 'linewidth', 1.5);
 % plot(t_save, I_save, 'r', 'linewidth', 1.5);
@@ -292,6 +268,31 @@ plot(t_save, I_save-MWI_save, 'r', 'linewidth', 1, 'LineStyle', '-');
 plot(t_save, R_save-MWR_save, 'b', 'linewidth', 1, 'LineStyle', '-');
 plot(t_save, D_save-MWD_save, 'k', 'linewidth', 1, 'LineStyle', '-')
 
-legend({'MWS','MWI','MWR','MWD', 'UMS','UMI','UMR','UMD'},'Location','northeast')
+lgd = legend({'MWS','MWI','MWR','MWD', 'UMS','UMI','UMR','UMD'},'Location','northeast');
+lgd.NumColumns = 2;
+
+drawnow;
+
+subplot(2,2,3);
+hold on
+title('Unmasked Population');
+plot(t_save, S_save-MWS_save, 'g', 'linewidth', 1.5);
+plot(t_save, I_save-MWI_save, 'r','linewidth', 1.5);
+plot(t_save, R_save-MWR_save, 'b','linewidth', 1.5);
+plot(t_save, D_save-MWD_save, 'k','linewidth', 1.5);
+
+legend({'UMS','UMI','UMR', 'UMD'},'Location','northeast')
+
+drawnow;
+
+subplot(2,2,4);
+hold on
+title('Masked Population');
+plot(t_save, MWS_save,'g', 'linewidth', 1.5);
+plot(t_save, MWI_save, 'r','linewidth', 1.5);
+plot(t_save, MWR_save,'b', 'linewidth', 1.5);
+plot(t_save, MWD_save,'k', 'linewidth', 1.5);
+
+legend({'MWS','MWI','MWR', 'MWD'},'Location','northeast')
 
 end %ends the function 

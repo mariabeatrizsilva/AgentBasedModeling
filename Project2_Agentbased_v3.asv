@@ -185,13 +185,13 @@ for trial=1: numTrials
     text(.1,10.75+shifty,'Unmasked:','Color', 'k');
     text(.1,10.25+shifty,'Masked:','Color', 'k');
     text(2,10.75+shifty,Stxt,'Color', 'g');
-    text(4,10.75,Itxt,'Color', 'r');
-    text(6,10.75,Rtxt,'Color', 'b');
-    text(8,10.75,Dtxt,'Color', 'k');
-    text(2,10.25,MWstxt,'Color', 'g');
-    text(4,10.25,MWitxt,'Color', 'r');
-    text(6,10.25,MWrtxt,'Color', 'b');
-    text(8,10.25,MWdtxt,'Color', 'k');
+    text(4,10.75+shifty,   Itxt,'Color', 'r');
+    text(6,10.75+shifty,   Rtxt,'Color', 'b');
+    text(8,10.75+shifty,   Dtxt,'Color', 'k');
+    text(2,10.25+shifty,MWstxt,'Color', 'g');
+    text(4,10.25+shifty,MWitxt,'Color', 'r');
+    text(6,10.25+shifty,MWrtxt,'Color', 'b');
+    text(8,10.25+shifty,MWdtxt,'Color', 'k');
     % text(10.5,10.75,Ttxt,'Color', 'k');
     % text(10.5,10.25,MWTtxt,'Color', 'k');
      text(10.35,11.5,'% Infected','Color', 'k');
@@ -220,7 +220,7 @@ for trial=1: numTrials
 end 
 
 figure
-
+subplot(2,2,1);
 hold on
 
 % Plots total population graph
@@ -234,31 +234,7 @@ legend({'S','I','R', 'D'},'Location','northeast')
 
 drawnow
 
-figure
-hold on
-title('Masked Population');
-plot(t_save, MWS_save,'g', 'linewidth', 1.5);
-plot(t_save, MWI_save, 'r','linewidth', 1.5);
-plot(t_save, MWR_save,'b', 'linewidth', 1.5);
-plot(t_save, MWD_save,'k', 'linewidth', 1.5);
-
-legend({'MWS','MWI','MWR', 'MWD'},'Location','northeast')
-
-drawnow;
-
-figure
-hold on
-title('Unmasked Population');
-plot(t_save, S_save-MWS_save, 'g', 'linewidth', 1.5);
-plot(t_save, I_save-MWI_save, 'r','linewidth', 1.5);
-plot(t_save, R_save-MWR_save, 'b','linewidth', 1.5);
-plot(t_save, D_save-MWD_save, 'k','linewidth', 1.5);
-
-legend({'UMS','UMI','UMR', 'UMD'},'Location','northeast')
-
-drawnow;
-
-figure
+subplot(2,2,2);
 hold on
 title('Masked vs Unmasked');
 % plot(t_save, S_save, 'g', 'linewidth', 1.5);
@@ -278,6 +254,30 @@ plot(t_save, I_save-MWI_save, 'r', 'linewidth', 1, 'LineStyle', '-');
 plot(t_save, R_save-MWR_save, 'b', 'linewidth', 1, 'LineStyle', '-');
 plot(t_save, D_save-MWD_save, 'k', 'linewidth', 1, 'LineStyle', '-')
 
-legend({'MWS','MWI','MWR','MWD', 'UMS','UMI','UMR','UMD'},'Location','northeast')
+lglegend({'MWS','MWI','MWR','MWD', 'UMS','UMI','UMR','UMD'},'Location','northeast')
+
+drawnow;
+
+subplot(2,2,3);
+hold on
+title('Unmasked Population');
+plot(t_save, S_save-MWS_save, 'g', 'linewidth', 1.5);
+plot(t_save, I_save-MWI_save, 'r','linewidth', 1.5);
+plot(t_save, R_save-MWR_save, 'b','linewidth', 1.5);
+plot(t_save, D_save-MWD_save, 'k','linewidth', 1.5);
+
+legend({'UMS','UMI','UMR', 'UMD'},'Location','northeast')
+
+drawnow;
+
+subplot(2,2,4);
+hold on
+title('Masked Population');
+plot(t_save, MWS_save,'g', 'linewidth', 1.5);
+plot(t_save, MWI_save, 'r','linewidth', 1.5);
+plot(t_save, MWR_save,'b', 'linewidth', 1.5);
+plot(t_save, MWD_save,'k', 'linewidth', 1.5);
+
+legend({'MWS','MWI','MWR', 'MWD'},'Location','northeast')
 
 end %ends the function 
