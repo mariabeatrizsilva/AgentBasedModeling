@@ -7,21 +7,20 @@ agentbased( .75, ...   % a
             50, ...     % numTrials
             1, ...      % riskDist
             20, ...     % numIll
-            1, ...      % stepSize
+            0.2, ...    % D (m^2/s)
             30, ...     % numdays
             50, ...     % numMasked
             0.5, ...    % maskEffect
             'T');       % seeSociability
 
-function agentbased(aIn,bIn,cIn, numIndivs, numTrials, riskDist, numIll, stepSizeIn, numdays, numMasked, maskEffect, seeSociability)
+function agentbased(aIn,bIn,cIn, numIndivs, numTrials, riskDist, numIll, D, numdays, numMasked, maskEffect, seeSociability)
 %% Constants
-day           = 60*60*24;               % Day length (s).
-tmax          = day * numdays;          % Duration of the simulation (s).
+tmax          = numdays;          % Duration of the simulation (s).
 dt            = tmax/numTrials;         % The duration of each time step.
-a             = aIn/day;                % Transmission Rate (s).
-b             = bIn/day;                % Recovery Rate     (s).
-c             = cIn/day;                % Death Rate        (s).
-stepSize      = stepSizeIn/day;   % Maximum daily step length (m/sqrt(s)).
+a             = aIn;                % Transmission Rate (s).
+b             = bIn;                % Recovery Rate     (s).
+c             = cIn;                % Death Rate        (s).
+stepSize = sqrt(D*dt);
 
 %% Create figure for plotting
 figure;
@@ -90,10 +89,8 @@ for trial=1: numTrials
         if indivs(ind).grp == 'D'              % Dead people go to a separate section
             indivs(ind).pos(1) = 11.25;
         else 
-            mvx = agent.sociability *  sqrt(dt* stepSize)* (sqrt(12)*rand()-(sqrt(12)/2)) + 0.5 * agent.inertia(1);   % amount for x to move
-            mvy = agent.sociability *  sqrt(dt* stepSize)* (sqrt(12)*rand()-(sqrt(12)/2)) + 0.5 * agent.inertia(2);   % amount for y to move
-            agent.inertia(1) = mvx;
-            agent.inertia(2) = mvy;
+            mvx = agent.sociability *  stepSize * (sqrt(12) * rand()-(sqrt(12)/2));   % amount for x to move
+            mvy = agent.sociability *  stepSize * (sqrt(12) * rand()-(sqrt(12)/2));   % amount for y to move
             agent.pos(1) = agent.pos(1) + mvx;  % updating positions
             agent.pos(2) = agent.pos(2) + mvy;
             if agent.pos(1)>xbound
@@ -222,7 +219,7 @@ for trial=1: numTrials
     ylabel('y');
     axis([-.25,xbound+2.25,-.25,ybound+1.25])
     xline(10.25);
-    title(['Trial: ', num2str(trial), '  |  Day: ', num2str(t/day)]);
+    title(['Trial: ', num2str(trial), '  |  Day: ', num2str(t)]);
     subplot(1,2,1);
     axis equal;
     axis([0, numIndivs,0,numIndivs]);

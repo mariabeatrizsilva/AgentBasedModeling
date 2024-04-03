@@ -5,7 +5,6 @@ classdef indiv
         grp = 'S';
         maskWearer = 'N';
         sociability = 1;
-        inertia = zeros(2);
     end 
     methods 
         function obj = set.pos(obj, vpos)
