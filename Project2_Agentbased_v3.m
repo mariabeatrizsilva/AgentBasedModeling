@@ -1,6 +1,6 @@
 
 %% Calls to function 
-agentbased( .75, ...   % a
+agentbased( .75, ...    % a
             0.05, ...   % b
             0.02,...    % c
             100,...     % numIndivs
@@ -36,14 +36,14 @@ axis([-.5 xbound+2.25 -.25 ybound+1.75]);
 numSpec = 0;
 p1 = indiv; 
 p1.pos = [10*rand(),10*rand];
-indivs = createArray(1,numIndivs,FillValue=p1); % Array of people
+indivs = createArray(1,numIndivs,FillValue=p1);     %% Make an array of people
 for ind=1:numIndivs 
     person = indiv; 
     person.pos = [10*rand(),10*rand];
-    if ind <= numIll %% Infect numIll of them 
+    if ind <= numIll                                %% Infect numIll of them 
         person.grp = 'I';
     end
-    if person.grp ~= 'I' && numSpec < numMasked %% Make some wear masks 
+    if person.grp ~= 'I' && numSpec < numMasked     %% Make some wear masks 
         person.maskWearer = 'Y';
         numSpec = numSpec + 1;
     end 
@@ -151,22 +151,22 @@ for trial=1: numTrials
             if indivs(ind).maskWearer == 'Y'
                 MWs = MWs+1;
             end 
-            for new_ind=1:numIndivs %loop over all individuals
+            for new_ind=1:numIndivs           % loop over all individuals
                 new_person = indivs(new_ind);
-                if indivs(new_ind).grp == 'I' %if someone is sick see how far they are
+                if indivs(new_ind).grp == 'I' % if someone is sick how far they are
                     distance = norm(new_person.pos - agent.pos);
-                    if distance < riskDist %% if theyre close enough
-                        transmission = dt * a * (1 - distance/riskDist); % transmission chance
-                        if (indivs(new_ind).maskWearer == 'Y')       %% if they're wearing a mask --> transmission chance decreases 
-                            transmission = maskEffect * transmission;
+                    if distance < riskDist    % if theyre close enough 
+                        transmission = dt * a * (1 - distance/riskDist); % compute transmission chance
+                        if (indivs(new_ind).maskWearer == 'Y')           % if they're wearing a mask --> transmission chance decreases 
+                            transmission = (1-maskEffect) * transmission;
                         end
-                        if (indivs(ind).maskWearer == 'Y')           %% if we're wearing a mask --> transmission chance decreases 
-                            transmission = maskEffect * transmission;
+                        if (indivs(ind).maskWearer == 'Y')               % if we're wearing a mask --> transmission chance decreases 
+                            transmission = (1-maskEffect) * transmission;
                         end
                         subplot(1,2,1);
                         scatter(ind,new_ind, 200*2*transmission, 'filled', 'MarkerFaceColor', [transmission 1-transmission 0]);
                         hold on
-                        if transmission > rand(1)                    %% make sick if bigger than a value
+                        if transmission > rand(1)                        % make sick if bigger than a value
                             indivs(ind).grp = 'I';
                             break;
                         end
@@ -252,10 +252,10 @@ title('Masked vs Unmasked');
 % plot(t_save, I_save, 'r', 'linewidth', 1.5);
 % plot(t_save, R_save, 'b', 'linewidth', 1.5);
 % plot(t_save, D_save, 'k', 'linewidth', 1.5);
- plot(t_save, MWS_save, 'Color', '#77AC30', 'linewidth', 1, 'LineStyle', '-');
- plot(t_save, MWI_save, 'Color', '#A2142F', 'linewidth', 1, 'LineStyle', '-');
- plot(t_save, MWR_save, 'Color', '#0072BD', 'linewidth', 1, 'LineStyle', '-');
- plot(t_save, MWD_save, 'Color', '#7E2F8E', 'linewidth', 1, 'LineStyle', '-');
+ plot(t_save, MWS_save, 'Color', '#77AC30', 'linewidth', 1, 'LineStyle', '--');
+ plot(t_save, MWI_save, 'Color', '#A2142F', 'linewidth', 1, 'LineStyle', '--');
+ plot(t_save, MWR_save, 'Color', '#0072BD', 'linewidth', 1, 'LineStyle', '--');
+ plot(t_save, MWD_save, 'Color', '#7E2F8E', 'linewidth', 1, 'LineStyle', '--');
 % plot(t_save, MWS_save, 'r', 'linewidth', 1, 'LineStyle', '--');
 % plot(t_save, MWI_save, 'g', 'linewidth', 1, 'LineStyle', '--');
 % plot(t_save, MWR_save, 'b', 'linewidth', 1, 'LineStyle', '--');
