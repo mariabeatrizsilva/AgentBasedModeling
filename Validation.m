@@ -1,21 +1,21 @@
 
-rounds = [25, 50, 100, 200, 300];
+rounds = [10, 25, 50, 100, 200];
 for round=1:length(rounds)
     subplot(2, 3, round)
     %% Calls to function 
-    agentbased( .75, ...    % a
-                0.05, ...   % b
-                0.02,...    % c
-                50,...     % numIndivs
+    agentbased( .75, ...               % a
+                0.05, ...              % b
+                0.02,...               % c
+                50,...                 % numIndivs
                 rounds(round), ...     % numTrials
-                1, ...      % riskDist
-                15, ...     % numIll
-                0.2, ...    % D (m^2/s)
-                30, ...     % numdays
-                50, ...     % numMasked
-                0.5, ...    % maskEffect
-                'T', ...    % seeSociability
-                10);  
+                1, ...                 % riskDist
+                15, ...                % numIll
+                0.2, ...               % D (m^2/s)
+                30, ...                % numdays
+                10, ...                % numMasked
+                0.5, ...               % maskEffect
+                'T', ...               % seeSociability
+                10);                   % numRuns       
 end
 
 function agentbased(aIn,bIn,cIn, numIndivs, numTrials, riskDist, numIll, D, numdays, numMasked, maskEffect, seeSociability, numRuns)
@@ -36,11 +36,11 @@ function agentbased(aIn,bIn,cIn, numIndivs, numTrials, riskDist, numIll, D, numd
     ybound = 10;
     axis([-.5 xbound+2.25 -.25 ybound+1.75]);
     
-    t_save = zeros(1, numRuns+1);
-    S_average = zeros(1, numRuns+1);
-    I_average = zeros(1, numRuns+1);
-    R_average = zeros(1, numRuns+1);
-    D_average = zeros(1, numRuns+1);
+    t_save = zeros(1, numTrials+1);
+    S_average = zeros(1, numTrials+1);
+    I_average = zeros(1, numTrials+1);
+    R_average = zeros(1, numTrials+1);
+    D_average = zeros(1, numTrials+1);
         
     %% Create array of individuals with initial positions and groups
     numSpec = 0;
@@ -150,13 +150,12 @@ function agentbased(aIn,bIn,cIn, numIndivs, numTrials, riskDist, numIll, D, numd
                     end
                 end
             end
-        
-            % Update t_save, Ssave, Isave, Rsave, Dsave
+
             t_save(trial+1) = t; 
-            S_average(trial+1) =S;
-            I_average(trial+1) = I; 
-            R_average(trial+1) = R; 
-            D_average(trial+1) = D; 
+            S_average(trial+1) = (S_average(trial+1)*(run-1) +S)/run;
+            I_average(trial+1) = (I_average(trial+1)*(run-1) + I)/run;
+            R_average(trial+1) = (R_average(trial+1)*(run-1) + R)/run;
+            D_average(trial+1) = (D_average(trial+1)*(run-1) + D)/run;
         
             axis equal;
             xlabel('x');
@@ -166,13 +165,6 @@ function agentbased(aIn,bIn,cIn, numIndivs, numTrials, riskDist, numIll, D, numd
             title(['Trial: ', num2str(trial), '  |  Day: ', num2str(t)]);
 
             drawnow update;
-
-            % Update t_save, Ssave, Isave, Rsave, Dsave
-            t_save(trial+1) = t; 
-            S_average(trial+1) = (S_average(trial+1)*(run-1) +S)/run;
-            I_average(trial+1) = (I_average(trial+1)*(run-1) + I)/run;
-            R_average(trial+1) = (R_average(trial+1)*(run-1) + R)/run;
-            D_average(trial+1) = (D_average(trial+1)*(run-1) + D)/run;
         end 
     end
     
