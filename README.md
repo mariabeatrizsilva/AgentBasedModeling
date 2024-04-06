@@ -19,7 +19,7 @@ Our program will generate the following three figures:
 
 Note that the leftmost and middle figure are just snapshots, and that these figures change as the program runs. Therefore, you can watch individuals interact and change state (susceptible, infected, recovered, dead). The rightmost figure is created once the individuals are finished moving. 
 
-<h2> The Contents of this Repository</h2>
+<h2> Repository Contents</h2>
 
 This repository contains
 
