@@ -5,7 +5,7 @@ How can we accurately model the spread of a disease in a population? Naturally, 
 
 Our study focused on tracking the positions of individuals and monitoring the spread of disease as they move and interact. Our model starts with a certain number of infected people in the population where everyone else is susceptible to the disease. All individuals start in random positions, moving and interacting as the model runs. As they interact with each other, infected individuals may transmit the disease based on how close they are to others and a random probability. Moreover, infected people can die or recover depending on a uniform sampled probability.
 
-<h2> Overview </h2>
+<h2> Project Overview: Agent-based disease modeling </h2>
 This project sought to develop a program that models a disease using an agent-based approach. Using this program, as is, you can edit the following parameters: 
 <p align="center">
 <img width="636" alt="params" src="https://github.com/mariabeatrizsilva/AgentBasedModeling/assets/67334485/5fe37722-fc45-4b84-858b-f4fa1598c3db">
