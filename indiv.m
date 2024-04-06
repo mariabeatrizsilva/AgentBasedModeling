@@ -3,7 +3,7 @@ classdef indiv
     properties 
         pos = zeros(2);
         grp = 'S';
-        maskWearer = 'N';
+        maskWearer = 'N'
         sociability = 1;
     end 
     methods 
@@ -17,9 +17,5 @@ classdef indiv
             disp("getting pos")
             value = obj.pos;
         end
-        %function move(obj, step, xBound, yBound)
     end 
 end
-
-%%can make some individuals hyper-social !! --> change diffusion constant .
-%%
