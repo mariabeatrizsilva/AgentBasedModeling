@@ -1,8 +1,8 @@
 
 %% Setting random seed 
 rng(1)
-%% Calls to function 
 
+%% Calls to function 
 % numIll + numMasked <= numIndivs
 agentbased( .9, ...    % a
             0.05, ...   % b
