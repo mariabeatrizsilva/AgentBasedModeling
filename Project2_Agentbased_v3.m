@@ -1,6 +1,7 @@
 
-%% Calls to function 
+%% Setting random seed 
 rng(1)
+%% Calls to function 
 
 % numIll + numMasked <= numIndivs
 agentbased( .9, ...    % a
@@ -62,6 +63,7 @@ for ind=1:numIndivs
     indivs(ind) = person;
 end 
 
+%% Arrays to plot final SIRD graphs
 t_save = zeros(1, numTrials+1);
 S_save = zeros(1, numTrials+1);
 I_save = zeros(1, numTrials+1);
@@ -72,8 +74,8 @@ MWI_save = zeros(1, numTrials+1);
 MWR_save = zeros(1, numTrials+1);
 MWD_save = zeros(1, numTrials+1);
 
-S_save(1) = numIndivs - numIll;
-I_save(1) = numIll;
+S_save(1)   = numIndivs - numIll;
+I_save(1)   = numIll;
 MWS_save(1) = numMasked;
 MWI_save(1) = 0;
 
@@ -194,8 +196,6 @@ for trial=1: numTrials
     MWitxt = ['I: ' num2str(MWi)];
     MWrtxt = ['R: ' num2str(MWr)];
     MWdtxt = ['D: ' num2str(MWd)];
-    % Ttxt   = ['Total: ' num2str(S+I+R+D)];
-    % MWTtxt = ['Total: ' num2str(MWs+MWi+MWr+MWd)];
     shifty = .25;
     text(.1,10.75+shifty,'Everyone:','Color', 'k');
     text(.1,10.25+shifty,'Masked:','Color', 'k');
@@ -207,11 +207,9 @@ for trial=1: numTrials
     text(4,10.25+shifty,MWitxt,'Color', 'r');
     text(6,10.25+shifty,MWrtxt,'Color', 'b');
     text(8,10.25+shifty,MWdtxt,'Color', 'k');
-    % text(10.5,10.75,Ttxt,'Color', 'k');
-    % text(10.5,10.25,MWTtxt,'Color', 'k');
-     text(10.35,11.5,'% Infected','Color', 'k');
-     text(11.,10.75+shifty,[num2str((I+R+D)/(S+I+R+D))],'Color', 'k');
-     text(11.,10.25+shifty,[num2str((MWi+MWr+MWd)/(MWs+MWi+MWr+MWd))],'Color', 'k');
+    text(10.35,11.5,'% Infected','Color', 'k');
+    text(11.,10.75+shifty,[num2str((I+R+D)/(S+I+R+D))],'Color', 'k');
+    text(11.,10.25+shifty,[num2str((MWi+MWr+MWd)/(MWs+MWi+MWr+MWd))],'Color', 'k');
 
     % Update t_save, Ssave, Isave, Rsave, Dsave
     t_save(trial+1) = t; 
@@ -237,10 +235,11 @@ for trial=1: numTrials
     xlabel('Susceptible Individual');
     ylabel('Infected Individual');
     drawnow;
-     % if trial == 1
+    %% Uncomment to save first and final frame 
+     % if trial == 1 
      %     saveas(gcf, ['mn' num2str(numMasked) 'me' num2str(maskEffect) '-init.png']);
      % end
-     % if trial == 50 
+     % if trial == numTrials 
      %    saveas(gcf, ['mn' num2str(numMasked) 'me' num2str(maskEffect) '-final.png']);
      % end
 end 
@@ -303,5 +302,6 @@ plot(t_save, MWR_save,'b', 'linewidth', 1.5);
 plot(t_save, MWD_save,'k', 'linewidth', 1.5);
 
 legend({'S','I','R', 'D'},'Location','northeast');
+%% Uncomment to save graph 
 % saveas(gcf, ['mn' num2str(numMasked) 'me' num2str(maskEffect) '-SIRD.png']);
-end %ends the function 
+end % ends the function 
