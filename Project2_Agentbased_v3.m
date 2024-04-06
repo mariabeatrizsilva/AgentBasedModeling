@@ -163,6 +163,7 @@ for trial=1: numTrials
                         if (indivs(ind).maskWearer == 'Y')               % if we're wearing a mask --> transmission chance decreases 
                             transmission = (1-maskEffect) * transmission;
                         end
+                        % Plot dot on interaction matrix
                         subplot(1,2,1);
                         scatter(ind,new_ind, 200*2*transmission, 'filled', 'MarkerFaceColor', [transmission 1-transmission 0]);
                         hold on
@@ -248,18 +249,10 @@ drawnow
 subplot(2,2,2);
 hold on
 title('Masked vs Unmasked');
-% plot(t_save, S_save, 'g', 'linewidth', 1.5);
-% plot(t_save, I_save, 'r', 'linewidth', 1.5);
-% plot(t_save, R_save, 'b', 'linewidth', 1.5);
-% plot(t_save, D_save, 'k', 'linewidth', 1.5);
- plot(t_save, MWS_save, 'Color', '#77AC30', 'linewidth', 1, 'LineStyle', '--');
- plot(t_save, MWI_save, 'Color', '#A2142F', 'linewidth', 1, 'LineStyle', '--');
- plot(t_save, MWR_save, 'Color', '#0072BD', 'linewidth', 1, 'LineStyle', '--');
- plot(t_save, MWD_save, 'Color', '#7E2F8E', 'linewidth', 1, 'LineStyle', '--');
-% plot(t_save, MWS_save, 'r', 'linewidth', 1, 'LineStyle', '--');
-% plot(t_save, MWI_save, 'g', 'linewidth', 1, 'LineStyle', '--');
-% plot(t_save, MWR_save, 'b', 'linewidth', 1, 'LineStyle', '--');
-% plot(t_save, MWD_save, 'k', 'linewidth', 1, 'LineStyle', '--')
+plot(t_save, MWS_save, 'Color', '#77AC30', 'linewidth', 1, 'LineStyle', '--');
+plot(t_save, MWI_save, 'Color', '#A2142F', 'linewidth', 1, 'LineStyle', '--');
+plot(t_save, MWR_save, 'Color', '#0072BD', 'linewidth', 1, 'LineStyle', '--');
+plot(t_save, MWD_save, 'Color', '#7E2F8E', 'linewidth', 1, 'LineStyle', '--');
 plot(t_save, S_save-MWS_save, 'g', 'linewidth', 1, 'LineStyle', '-');
 plot(t_save, I_save-MWI_save, 'r', 'linewidth', 1, 'LineStyle', '-');
 plot(t_save, R_save-MWR_save, 'b', 'linewidth', 1, 'LineStyle', '-');

@@ -1,5 +1,5 @@
 
-rounds = [10, 25, 50, 100, 200];
+rounds = [25, 50, 100, 200, 400];
 for round=1:length(rounds)
     subplot(2, 3, round)
     %% Calls to function 
