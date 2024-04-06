@@ -1,28 +1,76 @@
 
 %% Calls to function 
-agentbased( .75, ...   % a
+rng(1)
+
+% numIll + numMasked <= numIndivs
+% agentbased( .9, ...    % a
+%             0.05, ...   % b
+%             0.02,...    % c
+%             50,...     % numIndivs
+%             50, ...    % numTrials
+%             1, ...      % riskDist
+%             10, ...     % numIll
+%             0.2, ...    % D (m^2/s)
+%             30, ...     % numdays
+%             0, ...     % numMasked
+%             0.75, ...   % maskEffect
+%             'T');       % seeSociability
+% 
+% agentbased( .9, ...    % a
+%             0.05, ...   % b
+%             0.02,...    % c
+%             50,...     % numIndivs
+%             50, ...    % numTrials
+%             1, ...      % riskDist
+%             10, ...     % numIll
+%             0.2, ...    % D (m^2/s)
+%             30, ...     % numdays
+%             10, ...     % numMasked
+%             0.75, ...   % maskEffect
+%             'T');       % seeSociability
+% 
+% agentbased( .9, ...    % a
+%             0.05, ...   % b
+%             0.02,...    % c
+%             50,...     % numIndivs
+%             50, ...    % numTrials
+%             1, ...      % riskDist
+%             10, ...     % numIll
+%             0.2, ...    % D (m^2/s)
+%             30, ...     % numdays
+%             25, ...     % numMasked
+%             0.75, ...   % maskEffect
+%             'T');       % seeSociability
+
+agentbased( .9, ...    % a
             0.05, ...   % b
             0.02,...    % c
-            100,...     % numIndivs
-            50, ...     % numTrials
+            50,...     % numIndivs
+            50, ...    % numTrials
             1, ...      % riskDist
-            20, ...     % numIll
-            0.5, ...    % stepSize (m^2/s)
+            10, ...     % numIll
+            0.2, ...    % D (m^2/s)
             30, ...     % numdays
-            50, ...     % numMasked
-            0.5, ...    % maskEffect
+            40, ...     % numMasked
+            0.75, ...   % maskEffect
             'T');       % seeSociability
 
-function agentbased(aIn,bIn,cIn, numIndivs, numTrials, riskDist, numIll, stepSizeIn, numdays, numMasked, maskEffect, seeSociability)
+function agentbased(aIn,bIn,cIn, numIndivs, numTrials, riskDist, numIll, D, numdays, numMasked, maskEffect, seeSociability)
 %% Constants
 tmax          = numdays;          % Duration of the simulation (s).
 dt            = tmax/numTrials;         % The duration of each time step.
 a             = aIn;                % Transmission Rate (s).
 b             = bIn;                % Recovery Rate     (s).
 c             = cIn;                % Death Rate        (s).
+stepSize      = sqrt(D*dt);
 
 %% Create figure for plotting
 figure;
+x0=0;
+y0=0;
+width=600;
+height=400;
+set(gcf,'position',[x0 y0 2*width 2*height])
 hold on;
 axis square;
 xlabel('x');
@@ -35,14 +83,14 @@ axis([-.5 xbound+2.25 -.25 ybound+1.75]);
 numSpec = 0;
 p1 = indiv; 
 p1.pos = [10*rand(),10*rand];
-indivs = createArray(1,numIndivs,FillValue=p1); % Array of people
+indivs = createArray(1,numIndivs,FillValue=p1);     %% Make an array of people
 for ind=1:numIndivs 
     person = indiv; 
     person.pos = [10*rand(),10*rand];
-    if ind <= numIll %% Infect numIll of them 
+    if ind <= numIll                                %% Infect numIll of them 
         person.grp = 'I';
     end
-    if person.grp ~= 'I' && numSpec < numMasked %% Make some wear masks 
+    if person.grp ~= 'I' && numSpec < numMasked     %% Make some wear masks 
         person.maskWearer = 'Y';
         numSpec = numSpec + 1;
     end 
@@ -88,10 +136,8 @@ for trial=1: numTrials
         if indivs(ind).grp == 'D'              % Dead people go to a separate section
             indivs(ind).pos(1) = 11.25;
         else 
-            mvx = agent.sociability *  sqrt(dt * stepSize)* (sqrt(12)*rand()-(sqrt(12)/2)) + 0.5 * agent.inertia(1);   % amount for x to move
-            mvy = agent.sociability *  sqrt(dt * stepSize)* (sqrt(12)*rand()-(sqrt(12)/2)) + 0.5 * agent.inertia(2);   % amount for y to move
-            agent.inertia(1) = mvx;
-            agent.inertia(2) = mvy;
+            mvx = agent.sociability *  stepSize * (sqrt(12) * rand()-(sqrt(12)/2));   % amount for x to move
+            mvy = agent.sociability *  stepSize * (sqrt(12) * rand()-(sqrt(12)/2));   % amount for y to move
             agent.pos(1) = agent.pos(1) + mvx;  % updating positions
             agent.pos(2) = agent.pos(2) + mvy;
             if agent.pos(1)>xbound
@@ -152,22 +198,22 @@ for trial=1: numTrials
             if indivs(ind).maskWearer == 'Y'
                 MWs = MWs+1;
             end 
-            for new_ind=1:numIndivs %loop over all individuals
+            for new_ind=1:numIndivs           % loop over all individuals
                 new_person = indivs(new_ind);
-                if indivs(new_ind).grp == 'I' %if someone is sick see how far they are
+                if indivs(new_ind).grp == 'I' % if someone is sick how far they are
                     distance = norm(new_person.pos - agent.pos);
-                    if distance < riskDist %% if theyre close enough
-                        transmission = dt * a * (1 - distance/riskDist); % transmission chance
-                        if (indivs(new_ind).maskWearer == 'Y')       %% if they're wearing a mask --> transmission chance decreases 
-                            transmission = maskEffect * transmission;
+                    if distance < riskDist    % if theyre close enough 
+                        transmission = dt * a * (1 - distance/riskDist); % compute transmission chance
+                        if (indivs(new_ind).maskWearer == 'Y')           % if they're wearing a mask --> transmission chance decreases 
+                            transmission = (1-maskEffect) * transmission;
                         end
-                        if (indivs(ind).maskWearer == 'Y')           %% if we're wearing a mask --> transmission chance decreases 
-                            transmission = maskEffect * transmission;
+                        if (indivs(ind).maskWearer == 'Y')               % if we're wearing a mask --> transmission chance decreases 
+                            transmission = (1-maskEffect) * transmission;
                         end
                         subplot(1,2,1);
                         scatter(ind,new_ind, 200*2*transmission, 'filled', 'MarkerFaceColor', [transmission 1-transmission 0]);
                         hold on
-                        if transmission > rand(1)                    %% make sick if bigger than a value
+                        if transmission > rand(1)                        % make sick if bigger than a value
                             indivs(ind).grp = 'I';
                             break;
                         end
@@ -227,11 +273,21 @@ for trial=1: numTrials
     grid on;
     xlabel('Susceptible Individual');
     ylabel('Infected Individual');
-    drawnow;
-    
+    % drawnow;
+    % if trial == 1
+    %     saveas(gcf, ['mn' num2str(numMasked) 'me' num2str(maskEffect) '-init.png']);
+    % end
+    % if trial == 50 
+    %    saveas(gcf, ['mn' num2str(numMasked) 'me' num2str(maskEffect) '-final.png']);
+    % end
 end 
 
-figure
+figure('Name', ['mn = ' num2str(numMasked) ' | me = ' num2str(maskEffect)])
+x0=0;
+y0=0;
+width=600;
+height=400;
+set(gcf,'position',[x0 y0 2*width 2*height])
 subplot(2,2,1);
 hold on
 
@@ -244,7 +300,7 @@ plot(t_save, D_save, 'k', 'linewidth', 1.5);
 
 legend({'S','I','R', 'D'},'Location','northeast')
 
-drawnow
+% drawnow
 
 subplot(2,2,2);
 hold on
@@ -253,10 +309,10 @@ title('Masked vs Unmasked');
 % plot(t_save, I_save, 'r', 'linewidth', 1.5);
 % plot(t_save, R_save, 'b', 'linewidth', 1.5);
 % plot(t_save, D_save, 'k', 'linewidth', 1.5);
- plot(t_save, MWS_save, 'Color', '#77AC30', 'linewidth', 1, 'LineStyle', '-');
- plot(t_save, MWI_save, 'Color', '#A2142F', 'linewidth', 1, 'LineStyle', '-');
- plot(t_save, MWR_save, 'Color', '#0072BD', 'linewidth', 1, 'LineStyle', '-');
- plot(t_save, MWD_save, 'Color', '#7E2F8E', 'linewidth', 1, 'LineStyle', '-');
+ plot(t_save, MWS_save, 'Color', '#77AC30', 'linewidth', 1, 'LineStyle', '--');
+ plot(t_save, MWI_save, 'Color', '#A2142F', 'linewidth', 1, 'LineStyle', '--');
+ plot(t_save, MWR_save, 'Color', '#0072BD', 'linewidth', 1, 'LineStyle', '--');
+ plot(t_save, MWD_save, 'Color', '#7E2F8E', 'linewidth', 1, 'LineStyle', '--');
 % plot(t_save, MWS_save, 'r', 'linewidth', 1, 'LineStyle', '--');
 % plot(t_save, MWI_save, 'g', 'linewidth', 1, 'LineStyle', '--');
 % plot(t_save, MWR_save, 'b', 'linewidth', 1, 'LineStyle', '--');
@@ -266,10 +322,11 @@ plot(t_save, I_save-MWI_save, 'r', 'linewidth', 1, 'LineStyle', '-');
 plot(t_save, R_save-MWR_save, 'b', 'linewidth', 1, 'LineStyle', '-');
 plot(t_save, D_save-MWD_save, 'k', 'linewidth', 1, 'LineStyle', '-')
 
-lgd = legend({'MWS','MWI','MWR','MWD', 'UMS','UMI','UMR','UMD'},'Location','northeast');
+lgd = legend({'S','I','R','D', 'S','I','R','D'},'Location','northeast');
+title(lgd,'Masked   Unmasked')
 lgd.NumColumns = 2;
 
-drawnow;
+% drawnow;
 
 subplot(2,2,3);
 hold on
@@ -279,9 +336,9 @@ plot(t_save, I_save-MWI_save, 'r','linewidth', 1.5);
 plot(t_save, R_save-MWR_save, 'b','linewidth', 1.5);
 plot(t_save, D_save-MWD_save, 'k','linewidth', 1.5);
 
-legend({'UMS','UMI','UMR', 'UMD'},'Location','northeast')
+legend({'S','I','R', 'D'},'Location','northeast')
 
-drawnow;
+% drawnow;
 
 subplot(2,2,4);
 hold on
@@ -291,6 +348,6 @@ plot(t_save, MWI_save, 'r','linewidth', 1.5);
 plot(t_save, MWR_save,'b', 'linewidth', 1.5);
 plot(t_save, MWD_save,'k', 'linewidth', 1.5);
 
-legend({'MWS','MWI','MWR', 'MWD'},'Location','northeast')
-
+legend({'S','I','R', 'D'},'Location','northeast');
+saveas(gcf, ['mn' num2str(numMasked) 'me' num2str(maskEffect) '-SIRD.png']);
 end %ends the function 

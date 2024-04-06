@@ -1,17 +1,21 @@
 
 %% Calls to function 
-agentbased( .75, ...    % a
+rng(1)
+
+% numIll + numMasked <= numIndivs
+agentbased( .9, ...    % a
             0.05, ...   % b
             0.02,...    % c
-            100,...     % numIndivs
-            50, ...     % numTrials
+            50,...     % numIndivs
+            50, ...    % numTrials
             1, ...      % riskDist
-            20, ...     % numIll
+            10, ...     % numIll
             0.2, ...    % D (m^2/s)
             30, ...     % numdays
-            50, ...     % numMasked
-            0.5, ...    % maskEffect
+            10, ...     % numMasked
+            0.0, ...   % maskEffect
             'T');       % seeSociability
+
 
 function agentbased(aIn,bIn,cIn, numIndivs, numTrials, riskDist, numIll, D, numdays, numMasked, maskEffect, seeSociability)
 %% Constants
@@ -20,10 +24,15 @@ dt            = tmax/numTrials;         % The duration of each time step.
 a             = aIn;                % Transmission Rate (s).
 b             = bIn;                % Recovery Rate     (s).
 c             = cIn;                % Death Rate        (s).
-stepSize = sqrt(D*dt);
+stepSize      = sqrt(D*dt);
 
 %% Create figure for plotting
 figure;
+x0=0;
+y0=0;
+width=600;
+height=400;
+set(gcf,'position',[x0 y0 2*width 2*height])
 hold on;
 axis square;
 xlabel('x');
@@ -187,7 +196,7 @@ for trial=1: numTrials
     % Ttxt   = ['Total: ' num2str(S+I+R+D)];
     % MWTtxt = ['Total: ' num2str(MWs+MWi+MWr+MWd)];
     shifty = .25;
-    text(.1,10.75+shifty,'Unmasked:','Color', 'k');
+    text(.1,10.75+shifty,'Everyone:','Color', 'k');
     text(.1,10.25+shifty,'Masked:','Color', 'k');
     text(2,10.75+shifty,Stxt,'Color', 'g');
     text(4,10.75+shifty,   Itxt,'Color', 'r');
@@ -227,10 +236,20 @@ for trial=1: numTrials
     xlabel('Susceptible Individual');
     ylabel('Infected Individual');
     drawnow;
-    
+     % if trial == 1
+     %     saveas(gcf, ['mn' num2str(numMasked) 'me' num2str(maskEffect) '-init.png']);
+     % end
+     % if trial == 50 
+     %    saveas(gcf, ['mn' num2str(numMasked) 'me' num2str(maskEffect) '-final.png']);
+     % end
 end 
 
-figure
+figure('Name', ['mn = ' num2str(numMasked) ' | me = ' num2str(maskEffect)])
+x0=0;
+y0=0;
+width=500;
+height=500;
+set(gcf,'position',[x0 y0 2*width 2*height])
 subplot(2,2,1);
 hold on
 
@@ -265,9 +284,9 @@ plot(t_save, I_save-MWI_save, 'r', 'linewidth', 1, 'LineStyle', '-');
 plot(t_save, R_save-MWR_save, 'b', 'linewidth', 1, 'LineStyle', '-');
 plot(t_save, D_save-MWD_save, 'k', 'linewidth', 1, 'LineStyle', '-')
 
-lgd = legend({'MWS','MWI','MWR','MWD', 'UMS','UMI','UMR','UMD'},'Location','northeast');
+lgd = legend({'S','I','R','D', 'S','I','R','D'},'Location','northeast');
+title(lgd,'Masked   Unmasked')
 lgd.NumColumns = 2;
-
 drawnow;
 
 subplot(2,2,3);
@@ -278,7 +297,7 @@ plot(t_save, I_save-MWI_save, 'r','linewidth', 1.5);
 plot(t_save, R_save-MWR_save, 'b','linewidth', 1.5);
 plot(t_save, D_save-MWD_save, 'k','linewidth', 1.5);
 
-legend({'UMS','UMI','UMR', 'UMD'},'Location','northeast')
+legend({'S','I','R', 'D'},'Location','northeast')
 
 drawnow;
 
@@ -290,6 +309,6 @@ plot(t_save, MWI_save, 'r','linewidth', 1.5);
 plot(t_save, MWR_save,'b', 'linewidth', 1.5);
 plot(t_save, MWD_save,'k', 'linewidth', 1.5);
 
-legend({'MWS','MWI','MWR', 'MWD'},'Location','northeast')
-
+legend({'S','I','R', 'D'},'Location','northeast');
+% saveas(gcf, ['mn' num2str(numMasked) 'me' num2str(maskEffect) '-SIRD.png']);
 end %ends the function 
