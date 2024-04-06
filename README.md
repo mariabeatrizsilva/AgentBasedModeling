@@ -10,7 +10,4 @@ It will generate the following three figures:
  <img width="846" alt="threegraphs" src="https://github.com/mariabeatrizsilva/AgentBasedModeling/assets/67334485/099f8305-3c08-4e3d-ab27-679dfec00724"> 
 <br> 
 
-
-
-
-
+The most robust version of this script is Project2_AgentBased_v3, so we advise the use of that program for any further studies.
