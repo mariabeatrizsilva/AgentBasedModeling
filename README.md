@@ -1,4 +1,4 @@
-# AgentBasedModeling
+# AgentBasedModel
 <h2> Introduction </h2>
 
 How can we accurately model the spread of a disease in a population? Naturally, there are many factors and a lot of them are outside our control, but one thing we can do is consider the behavior and interactions of different individuals in a population. This technique is referred to as agent-based modeling. 
